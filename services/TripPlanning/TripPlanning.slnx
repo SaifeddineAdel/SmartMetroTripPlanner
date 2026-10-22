@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/TripPlanning.Api/TripPlanning.Api.csproj" />
+  <Project Path="src/TripPlanning.Application/TripPlanning.Application.csproj" />
+  <Project Path="src/TripPlanning.Domain/TripPlanning.Domain.csproj" />
+  <Project Path="src/TripPlanning.Infrastructure/TripPlanning.Infrastructure.csproj" />
+</Solution>

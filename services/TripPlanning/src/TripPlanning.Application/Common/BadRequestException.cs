@@ -1,0 +1,9 @@
+﻿namespace TripPlanning.Application.Common.Exceptions;
+
+public sealed class BadRequestException : AppException
+{
+    public BadRequestException(string message)
+        : base(message, "Bad Request", 400)
+    {
+    }
+}

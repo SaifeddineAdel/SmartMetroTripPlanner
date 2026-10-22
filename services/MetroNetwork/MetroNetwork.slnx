@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/MetroNetwork.Api/MetroNetwork.Api.csproj" />
+  <Project Path="src/MetroNetwork.Application/MetroNetwork.Application.csproj" Id="5d339915-1339-4470-bf83-fc3aa921ca2e" />
+  <Project Path="src/MetroNetwork.Domain/MetroNetwork.Domain.csproj" Id="59e0fcbd-062a-4652-bad1-9edae729604e" />
+  <Project Path="src/MetroNetwork.Infrastructure/MetroNetwork.Infrastructure.csproj" Id="e21cf6d8-fd13-424c-9b4e-fbe395bcf75e" />
+</Solution>
