@@ -27,6 +27,11 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
                  "Validation Error",
                  exception.Message),
 
+            UnauthorizedException =>
+                (StatusCodes.Status401Unauthorized,
+                 "Unauthorized",
+                 exception.Message),
+
             NotFoundException =>
                 (StatusCodes.Status404NotFound,
                  "Resource Not Found",
@@ -34,8 +39,8 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
             ConflictException =>
                 (StatusCodes.Status409Conflict,
-                "Conflict",
-                exception.Message),
+                 "Conflict",
+                 exception.Message),
 
             _ =>
                 (StatusCodes.Status500InternalServerError,

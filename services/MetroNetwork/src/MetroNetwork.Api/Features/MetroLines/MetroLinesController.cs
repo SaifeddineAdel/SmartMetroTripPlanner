@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MetroNetwork.Application.Features.MetroLines;
 using MetroNetwork.Application.Features.MetroLines.DTOs;
 
@@ -16,8 +17,11 @@ public sealed class MetroLinesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(MetroLineResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<MetroLineResponse>> Create(
         [FromBody] CreateMetroLineRequest request,
@@ -34,6 +38,7 @@ public sealed class MetroLinesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(MetroLineResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MetroLineResponse>> GetById(
@@ -48,19 +53,25 @@ public sealed class MetroLinesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(
         typeof(IReadOnlyList<MetroLineResponse>),
         StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<MetroLineResponse>>> GetAll(
         CancellationToken cancellationToken)
     {
-        var response = await _metroLineService.GetAllAsync(cancellationToken);
+        var response = await _metroLineService.GetAllAsync(
+            cancellationToken);
 
         return Ok(response);
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Rename(
@@ -77,14 +88,19 @@ public sealed class MetroLinesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Delete(
         int id,
         CancellationToken cancellationToken)
     {
-        await _metroLineService.DeleteAsync(id, cancellationToken);
+        await _metroLineService.DeleteAsync(
+            id,
+            cancellationToken);
 
         return NoContent();
     }

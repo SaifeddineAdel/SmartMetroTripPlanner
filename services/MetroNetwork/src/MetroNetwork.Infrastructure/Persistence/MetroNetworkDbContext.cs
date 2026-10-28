@@ -1,6 +1,7 @@
 ﻿using MetroNetwork.Domain.Features.LineStations;
 using MetroNetwork.Domain.Features.MetroLines;
 using MetroNetwork.Domain.Features.Stations;
+using MetroNetwork.Domain.Features.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace MetroNetwork.Infrastructure.Persistence
@@ -18,6 +19,10 @@ namespace MetroNetwork.Infrastructure.Persistence
         public DbSet<MetroLine> MetroLines => Set<MetroLine>();
 
         public DbSet<LineStation> LineStations => Set<LineStation>();
+
+        public DbSet<User> Users => Set<User>();
+
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
