@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="services/ApiGateway/src/ApiGateway.Api/ApiGateway.Api.csproj" />
+  <Project Path="services/MetroNetwork/src/MetroNetwork.Api/MetroNetwork.Api.csproj" />
+  <Project Path="services/MetroNetwork/src/MetroNetwork.Application/MetroNetwork.Application.csproj" />
+  <Project Path="services/MetroNetwork/src/MetroNetwork.Domain/MetroNetwork.Domain.csproj" />
+  <Project Path="services/MetroNetwork/src/MetroNetwork.Infrastructure/MetroNetwork.Infrastructure.csproj" />
+  <Project Path="services/TripPlanning/src/TripPlanning.Api/TripPlanning.Api.csproj" />
+  <Project Path="services/TripPlanning/src/TripPlanning.Application/TripPlanning.Application.csproj" />
+  <Project Path="services/TripPlanning/src/TripPlanning.Domain/TripPlanning.Domain.csproj" />
+  <Project Path="services/TripPlanning/src/TripPlanning.Infrastructure/TripPlanning.Infrastructure.csproj" />
+</Solution>

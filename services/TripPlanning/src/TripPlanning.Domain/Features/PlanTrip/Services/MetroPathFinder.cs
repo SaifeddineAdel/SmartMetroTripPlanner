@@ -1,4 +1,5 @@
-﻿using TripPlanning.Domain.Features.PlanTrip.Graph;
+﻿
+using TripPlanning.Domain.Features.PlanTrip.Graph;
 
 namespace TripPlanning.Domain.Features.PlanTrip.Services;
 
@@ -12,56 +13,106 @@ public sealed class MetroPathFinder
         if (startStationId == destinationStationId)
             return Array.Empty<GraphConnection>();
 
-        var queue = new Queue<int>();
-        var visited = new HashSet<int> { startStationId };
-        var previousConnections = new Dictionary<int, GraphConnection>();
+        var startState = new SearchState(startStationId, null);
 
-        queue.Enqueue(startStationId);
+        var queue = new PriorityQueue<SearchState, (int Stations, int Transfers)>();
+
+        var distances = new Dictionary<SearchState, (int Stations, int Transfers)>
+        {
+            [startState] = (0, 0)
+        };
+
+        var previousStates =
+            new Dictionary<SearchState, (SearchState Previous, GraphConnection Connection)>();
+
+        queue.Enqueue(startState, (0, 0));
 
         while (queue.Count > 0)
         {
-            var currentStationId = queue.Dequeue();
+            queue.TryDequeue(out var currentState, out var currentPriority);
 
-            foreach (var connection in graph.GetConnectionsFrom(currentStationId))
+            if (!distances.TryGetValue(currentState, out var knownPriority)
+                || currentPriority != knownPriority)
             {
-                if (!visited.Add(connection.ToStationId))
-                    continue;
+                continue;
+            }
 
-                previousConnections[connection.ToStationId] = connection;
+            if (currentState.StationId == destinationStationId)
+            {
+                return ReconstructPath(
+                    previousStates,
+                    startState,
+                    currentState);
+            }
 
-                if (connection.ToStationId == destinationStationId)
+            foreach (var connection in graph.GetConnectionsFrom(currentState.StationId))
+            {
+                var transferCost =
+                    currentState.LineId.HasValue
+                    && currentState.LineId.Value != connection.MetroLineId
+                        ? 1
+                        : 0;
+
+                var nextState = new SearchState(
+                    connection.ToStationId,
+                    connection.MetroLineId);
+
+                var nextPriority = (
+                    Stations: currentPriority.Stations + 1,
+                    Transfers: currentPriority.Transfers + transferCost
+                );
+
+                if (distances.TryGetValue(nextState, out var existingPriority)
+                    && ComparePriority(existingPriority, nextPriority) <= 0)
                 {
-                    return ReconstructPath(
-                        previousConnections,
-                        startStationId,
-                        destinationStationId);
+                    continue;
                 }
 
-                queue.Enqueue(connection.ToStationId);
+                distances[nextState] = nextPriority;
+
+                previousStates[nextState] = (currentState, connection);
+
+                queue.Enqueue(nextState, nextPriority);
             }
         }
 
         return null;
     }
 
+    private static int ComparePriority(
+        (int Stations, int Transfers) first,
+        (int Stations, int Transfers) second)
+    {
+        var stationComparison = first.Stations.CompareTo(second.Stations);
+
+        if (stationComparison != 0)
+            return stationComparison;
+
+        return first.Transfers.CompareTo(second.Transfers);
+    }
+
     private static IReadOnlyList<GraphConnection> ReconstructPath(
-        Dictionary<int, GraphConnection> previousConnections,
-        int startStationId,
-        int destinationStationId)
+        Dictionary<SearchState, (SearchState Previous, GraphConnection Connection)> previousStates,
+        SearchState startState,
+        SearchState destinationState)
     {
         var path = new List<GraphConnection>();
-        var currentStationId = destinationStationId;
+        var currentState = destinationState;
 
-        while (currentStationId != startStationId)
+        while (currentState != startState)
         {
-            var connection = previousConnections[currentStationId];
+            var previous = previousStates[currentState];
 
-            path.Add(connection);
-            currentStationId = connection.FromStationId;
+            path.Add(previous.Connection);
+            currentState = previous.Previous;
         }
 
         path.Reverse();
 
         return path;
     }
+
+    private readonly record struct SearchState(
+        int StationId,
+        int? LineId);
 }
