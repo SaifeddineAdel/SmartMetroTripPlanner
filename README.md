@@ -5,9 +5,9 @@ A metro trip-planning backend built with **ASP.NET Core and .NET 10**. The syste
 ## Key Features
 
 - **Microservices Architecture** — Separate `MetroNetwork` and `TripPlanning` services communicating through REST APIs.
-- **API Gateway** — Centralized entry point for routing client requests to backend services using YARP (Yet Another Reverse Proxy).
+- **API Gateway** — Centralized entry point for routing client requests using YARP (Yet Another Reverse Proxy).
 - **JWT Authentication** — Token-based authentication using JSON Web Tokens.
-- **Refresh Tokens** — Refresh-token flow for obtaining new access tokens without requiring users to authenticate again.
+- **Refresh Tokens** — Refresh-token flow for obtaining new access tokens.
 - **Clean Architecture** — Separation of concerns across API, Application, Domain, and Infrastructure layers.
 - **Domain-Driven Design (DDD)** — Domain modeling and separation of business logic from infrastructure concerns.
 - **SOLID Principles and Clean Code** — Maintainable code, clear responsibilities, and separation of concerns.
@@ -20,12 +20,12 @@ A metro trip-planning backend built with **ASP.NET Core and .NET 10**. The syste
 
 ## Technology Stack
 
-### Backend
+**Backend**
 - C#
 - .NET 10
 - ASP.NET Core Web API
 
-### Architecture and Design
+**Architecture and Design**
 - Microservices Architecture
 - API Gateway with YARP
 - Clean Architecture
@@ -34,23 +34,23 @@ A metro trip-planning backend built with **ASP.NET Core and .NET 10**. The syste
 - SOLID Principles
 - Clean Code
 
-### Authentication
+**Authentication**
 - JWT Authentication
 - Access Tokens
 - Refresh Tokens
 
-### API Development
+**API Development**
 - RESTful APIs
 - DTOs
 - Swagger
 
-### Database
+**Database**
 - SQL Server
 - Entity Framework Core
 - Relational Data Modeling
 - Soft Deletion
 
-### Algorithms
+**Algorithms**
 - Graph Modeling
 - Priority Queue
 - Lexicographic Priority Ordering
@@ -58,33 +58,36 @@ A metro trip-planning backend built with **ASP.NET Core and .NET 10**. The syste
 - Route Reconstruction
 - Transfer Identification
 
-### Tools
+**Tools**
 - Git
 - GitHub
 - Visual Studio
 
 ## Architecture
 
-The solution contains an API Gateway and two backend services. Each backend service follows Clean Architecture.
+The solution consists of an API Gateway and two backend microservices, with each service following Clean Architecture.
 
 ```text
 SmartMetroTripPlanner/
-├── ApiGateway.Api/
-│
-├── MetroNetwork.Api/
-├── MetroNetwork.Application/
-├── MetroNetwork.Domain/
-├── MetroNetwork.Infrastructure/
-│
-├── TripPlanning.Api/
-├── TripPlanning.Application/
-├── TripPlanning.Domain/
-├── TripPlanning.Infrastructure/
+├── services/
+│   ├── ApiGateway.Api/
+│   │
+│   ├── MetroNetwork/
+│   │   └── src/
+│   │       ├── MetroNetwork.Api/
+│   │       ├── MetroNetwork.Application/
+│   │       ├── MetroNetwork.Domain/
+│   │       └── MetroNetwork.Infrastructure/
+│   │
+│   └── TripPlanning/
+│       └── src/
+│           ├── TripPlanning.Api/
+│           ├── TripPlanning.Application/
+│           ├── TripPlanning.Domain/
+│           └── TripPlanning.Infrastructure/
 │
 └── README.md
 ```
-
-The directory tree is a logical overview. Refer to the actual repository structure for the exact project locations.
 
 ### API Gateway
 
@@ -98,7 +101,7 @@ Responsibilities include:
 - Retrieving and managing stations and metro lines.
 - Maintaining relationships between stations and metro lines.
 - Providing REST APIs for network data.
-- Persisting data through Entity Framework Core and SQL Server.
+- Managing relational data using Entity Framework Core and SQL Server.
 - Supporting soft deletion for stations.
 
 ### TripPlanning Service
@@ -118,10 +121,8 @@ Responsibilities include:
 The application uses JWT-based authentication with access tokens and refresh tokens.
 
 - **Access Token** — Used to authenticate requests to protected endpoints.
-- **Refresh Token** — Used to obtain a new access token according to the implemented refresh-token flow.
-- **Protected Endpoints** — Require valid authentication and the appropriate authorization.
-
-Authentication endpoints, token expiration, refresh-token storage, and revocation behavior depend on the actual implementation.
+- **Refresh Token** — Used to obtain a new access token through the implemented refresh-token flow.
+- **Authorization** — Protects endpoints according to the application's authentication and authorization configuration.
 
 ## Route Planning Algorithm
 
@@ -138,21 +139,20 @@ Each candidate state is evaluated using two criteria, in this order:
 1. **Minimum number of stations** — The primary optimization criterion.
 2. **Minimum number of line transfers** — The secondary criterion when station counts are equal.
 
-The algorithm uses a `PriorityQueue`, a distance dictionary to track the best known priority for each search state, and previous-state tracking to reconstruct the resulting route.
+The algorithm uses a `PriorityQueue` to process states in priority order, a distance dictionary to track the best known priority for each state, and previous-state tracking to reconstruct the resulting path.
 
 ### Route Planning Process
 
-1. Load the metro network.
-2. Build the in-memory graph.
-3. Initialize the search from the starting station.
-4. Explore candidate connections in priority order.
-5. Prefer routes with fewer stations.
-6. When station counts are equal, prefer routes with fewer transfers.
-7. Reconstruct the selected path.
-8. Group route segments by metro line and identify transfers.
-9. Calculate the estimated journey time and ticket fare.
+1. Build the in-memory metro graph.
+2. Initialize the search from the starting station.
+3. Explore connections in priority order.
+4. Prefer routes with fewer stations.
+5. When station counts are equal, prefer routes with fewer transfers.
+6. Reconstruct the selected path.
+7. Group route segments by metro line and identify transfers.
+8. Calculate the estimated journey time and ticket fare.
 
-**Important:** This algorithm does not optimize journey time directly. Travel time and fare are calculated separately from the selected route.
+**Note:** The route-selection algorithm does not minimize journey time directly. Travel time and fare are calculated separately from the selected route.
 
 ## API Example
 
@@ -172,7 +172,7 @@ Content-Type: application/json
 }
 ```
 
-The response includes the journey information supported by the API, such as:
+The response includes journey information supported by the API, such as:
 
 - Start and destination stations.
 - Route segments.
@@ -197,61 +197,3 @@ A global exception handler maps application exceptions to appropriate HTTP statu
 
 Unexpected errors are handled centrally without exposing internal exception details to API consumers.
 
-## Prerequisites
-
-- .NET 10 SDK
-- SQL Server
-- Visual Studio or another .NET-compatible IDE
-
-## Getting Started
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/SaifeddineAdel/SmartMetroTripPlanner.git
-cd SmartMetroTripPlanner
-```
-
-### 2. Configure the Database
-
-Configure the SQL Server connection string in the appropriate `MetroNetwork` configuration.
-
-Ensure the database schema exists and apply the required Entity Framework Core migrations, if available.
-
-### 3. Configure Service URLs
-
-Configure `Services:MetroNetwork:BaseUrl` in the `TripPlanning` service to point to the running `MetroNetwork` API.
-
-Configure the API Gateway's `ReverseProxy` section with the appropriate routes and clusters.
-
-### 4. Configure Authentication
-
-Configure the JWT settings and refresh-token behavior required by the authentication implementation.
-
-Keep secrets, passwords, and sensitive connection details out of source control. Use .NET User Secrets for local development or an appropriate secret-management solution for deployment.
-
-### 5. Run the Services
-
-Run the `MetroNetwork` API, `TripPlanning` API, and API Gateway using their configured launch profiles and ports.
-
-Ensure the gateway routes match the actual service endpoints.
-
-### 6. Explore the APIs with Swagger
-
-Open the Swagger UI configured for each service or gateway, depending on the project's setup.
-
-Use Swagger to inspect endpoints, submit requests, and test API responses. Protected endpoints may require authentication.
-
-## Testing
-
-The main API flows have been manually tested using Swagger, where applicable.
-
-Automated unit and integration tests can be added to verify domain behavior, route calculations, authentication, and communication between services.
-
-## Notes
-
-- Update database connection strings and service URLs for your local environment.
-- Ensure YARP routes and clusters match the actual service endpoints.
-- Route selection prioritizes the minimum number of stations, then the minimum number of transfers.
-- Estimated travel time and ticket fare are calculated separately from route selection.
-- Never commit JWT secrets, passwords, or other sensitive configuration values.
