@@ -1,0 +1,98 @@
+services:
+
+  # SQL Server
+  metro-sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: metro-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - metronetwork-data:/var/opt/mssql
+    networks:
+      - metronetwork-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b -o /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # MetroNetwork API
+  metro-api:
+    build:
+      context: ./services/MetroNetwork
+      dockerfile: Dockerfile
+    image: metronetwork-api:1.0
+    container_name: metro-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__DefaultConnection: "Server=metro-sql,1433;Database=MetroNetworkDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
+      Jwt__SecretKey: ${JWT_SECRET_KEY}
+      BootstrapAdmin__Email: ${BOOTSTRAP_ADMIN_EMAIL}
+      BootstrapAdmin__Password: ${BOOTSTRAP_ADMIN_PASSWORD}
+    ports:
+      - "8081:8080"
+    networks:
+      - metronetwork-network
+    depends_on:
+      metro-sql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # TripPlanning API
+  trip-api:
+    build:
+      context: ./services/TripPlanning
+      dockerfile: Dockerfile
+    image: tripplanning-api:1.0
+    container_name: trip-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      Services__MetroNetwork__BaseUrl: http://metro-api:8080/
+    ports:
+      - "8082:8080"
+    networks:
+      - metronetwork-network
+    depends_on:
+      metro-api:
+        condition: service_started
+    restart: unless-stopped
+
+  # API Gateway
+  metro-gateway:
+    build:
+      context: ./services/ApiGateway
+      dockerfile: Dockerfile
+    image: apigateway-api:1.0
+    container_name: metro-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ReverseProxy__Clusters__metro-network-cluster__Destinations__destination1__Address: http://metro-api:8080/
+      ReverseProxy__Clusters__trip-planning-cluster__Destinations__destination1__Address: http://trip-api:8080/
+    ports:
+      - "8080:8080"
+    networks:
+      - metronetwork-network
+    depends_on:
+      - metro-api
+      - trip-api
+    restart: unless-stopped
+
+# Existing Docker Volume
+volumes:
+  metronetwork-data:
+    external: true
+    name: metronetwork-data
+
+# Existing Docker Network
+networks:
+  metronetwork-network:
+    external: true
+    name: metronetwork-network
