@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/tests/">
+    <Project Path="test/TripPlanning.UnitTests/TripPlanning.UnitTests.csproj" Id="4c822c6f-dbf9-4a2c-a4de-1faf97ea5ff8" />
+  </Folder>
   <Project Path="services/ApiGateway/src/ApiGateway.Api/ApiGateway.Api.csproj" />
   <Project Path="services/MetroNetwork/src/MetroNetwork.Api/MetroNetwork.Api.csproj" />
   <Project Path="services/MetroNetwork/src/MetroNetwork.Application/MetroNetwork.Application.csproj" />
