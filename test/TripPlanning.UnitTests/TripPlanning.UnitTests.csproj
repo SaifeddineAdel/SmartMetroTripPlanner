@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\services\TripPlanning\src\TripPlanning.Application\TripPlanning.Application.csproj" />
     <ProjectReference Include="..\..\services\TripPlanning\src\TripPlanning.Domain\TripPlanning.Domain.csproj" />
   </ItemGroup>
 
