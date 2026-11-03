@@ -11,15 +11,18 @@ public sealed class PlanTripService
     private readonly IMetroNetworkClient _metroNetworkClient;
     private readonly MetroGraphBuilder _graphBuilder;
     private readonly MetroPathFinder _pathFinder;
+    private readonly TicketFareCalculator _fareCalculator;
 
     public PlanTripService(
         IMetroNetworkClient metroNetworkClient,
         MetroGraphBuilder graphBuilder,
-        MetroPathFinder pathFinder)
+        MetroPathFinder pathFinder,
+        TicketFareCalculator fareCalculator )
     {
         _metroNetworkClient = metroNetworkClient;
         _graphBuilder = graphBuilder;
         _pathFinder = pathFinder;
+        _fareCalculator = fareCalculator;
     }
 
     public async Task<TripPlanResponse> PlanAsync(
@@ -67,13 +70,7 @@ public sealed class PlanTripService
         var totalMinutes = path.Sum(connection =>
             connection.MetroLineId == 1 ? 2.5 : 2.0);
 
-        var fare = totalStationsCount switch
-        {
-            <= 9 => 10m,
-            <= 16 => 12m,
-            <= 23 => 15m,
-            _ => 20m
-        };
+        var fare = _fareCalculator.Calculate(totalStationsCount);
 
         return new TripPlanResponse(
             start,

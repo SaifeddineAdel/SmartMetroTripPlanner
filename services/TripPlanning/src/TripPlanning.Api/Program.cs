@@ -1,4 +1,3 @@
-
 using FluentValidation;
 using TripPlanning.Api.ExceptionHandling;
 using TripPlanning.Application.Features.PlanTrip.Abstractions;
@@ -36,6 +35,7 @@ builder.Services.AddHttpClient<IMetroNetworkClient, MetroNetworkClient>(
 builder.Services.AddScoped<MetroGraphBuilder>();
 builder.Services.AddScoped<MetroPathFinder>();
 builder.Services.AddScoped<PlanTripService>();
+builder.Services.AddScoped<TicketFareCalculator>();
 builder.Services.AddValidatorsFromAssemblyContaining<PlanTripRequestValidator>();
 
 var app = builder.Build();
