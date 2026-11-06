@@ -1,204 +1,197 @@
-﻿using Moq;
-using TripPlanning.Application.Features.PlanTrip.Abstractions;
-using TripPlanning.Application.Features.PlanTrip.DTOs;
+﻿using TripPlanning.Application.Common.DTOs;
 using TripPlanning.Application.Features.PlanTrip.Services;
 using TripPlanning.Domain.Features.PlanTrip.Graph;
 
+namespace TripPlanning.UnitTests.Features.PlanTrip;
 
-namespace TripPlanning.UnitTests.Features.PlanTrip
+public class MetroGraphBuilderTests
 {
-    public class MetroGraphBuilderTests
+    private readonly MetroGraphBuilder _sut;
+
+    public MetroGraphBuilderTests()
     {
-        private readonly Mock<IMetroNetworkClient> _clientMock;
-        private readonly MetroGraphBuilder _sut;
+        _sut = new MetroGraphBuilder();
+    }
 
-        public MetroGraphBuilderTests()
+    [Fact]
+    public void Build_NoMetroLines_ReturnsEmptyGraph()
+    {
+        // Arrange
+        var snapshot = new MetroNetworkSnapshot();
+
+        // Act
+        var result = _sut.Build(snapshot);
+
+        // Assert
+        Assert.Empty(result.Connections);
+    }
+
+    [Fact]
+    public void Build_TwoStationsExist_CreatesBidirectionalConnections()
+    {
+        // Arrange
+        var snapshot = new MetroNetworkSnapshot
         {
-            _clientMock = new Mock<IMetroNetworkClient>();
-            _sut = new MetroGraphBuilder(_clientMock.Object);
-        }
+            MetroLines =
+            [
+                new MetroLineSnapshot(1, "Line 1")
+            ],
 
-        [Fact]
-        public async Task BuildAsync_NoMetroLines_ResturnEmptyGraph()
+            Stations =
+            [
+                new StationSnapshot(10, "Station 10"),
+                new StationSnapshot(20, "Station 20")
+            ],
+
+            LineStations =
+            [
+                new LineStationSnapshot(1, 10, 1),
+                new LineStationSnapshot(1, 20, 2)
+            ]
+        };
+
+        // Act
+        var result = _sut.Build(snapshot);
+
+        // Assert
+        Assert.Equal(2, result.Connections.Count);
+
+        Assert.Contains(
+            new GraphConnection(10, 20, 1),
+            result.Connections);
+
+        Assert.Contains(
+            new GraphConnection(20, 10, 1),
+            result.Connections);
+    }
+
+    [Fact]
+    public void Build_StationsAreUnordered_CreatesConnectionsBasedOnSequence()
+    {
+        // Arrange
+        var snapshot = new MetroNetworkSnapshot
         {
-            // Arrang
-            IReadOnlyList<MetroLineData> lines = [];
+            MetroLines =
+            [
+                new MetroLineSnapshot(1, "Line 1")
+            ],
 
-            _clientMock
-                .Setup(client => client.GetMetroLinesAsync(
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lines);
+            Stations =
+            [
+                new StationSnapshot(10, "Station 10"),
+                new StationSnapshot(20, "Station 20"),
+                new StationSnapshot(30, "Station 30")
+            ],
 
-            // Act
-            var result = await _sut.BuildAsync(CancellationToken.None);
+            LineStations =
+            [
+                new LineStationSnapshot(1, 30, 3),
+                new LineStationSnapshot(1, 10, 1),
+                new LineStationSnapshot(1, 20, 2)
+            ]
+        };
 
-            // Assert
-            Assert.Empty(result.Connections);
-        }
+        // Act
+        var result = _sut.Build(snapshot);
 
-        [Fact]
-        public async Task BuildAsync_TwoStationsExists_CreatesBidirectionalConnections()
+        // Assert
+        Assert.Equal(4, result.Connections.Count);
+
+        Assert.Contains(
+            new GraphConnection(10, 20, 1),
+            result.Connections);
+
+        Assert.Contains(
+            new GraphConnection(20, 30, 1),
+            result.Connections);
+
+        Assert.Contains(
+            new GraphConnection(30, 20, 1),
+            result.Connections);
+
+        Assert.Contains(
+            new GraphConnection(20, 10, 1),
+            result.Connections);
+    }
+
+    [Fact]
+    public void Build_MultipleLinesExist_BuildsConnectionsForEachLine()
+    {
+        // Arrange
+        var snapshot = new MetroNetworkSnapshot
         {
-            // Arrange
-            IReadOnlyList<MetroLineData> lines =
-                [
-                    new MetroLineData(1, "Line 1")
-                ];
+            MetroLines =
+            [
+                new MetroLineSnapshot(1, "Line 1"),
+                new MetroLineSnapshot(2, "Line 2")
+            ],
 
-            IReadOnlyList<LineStationData> lineStations =
-                [
-                    new LineStationData(1, 10, 1),
-                    new LineStationData(1, 20, 2)
-                ];
+            Stations =
+            [
+                new StationSnapshot(10, "Station 10"),
+                new StationSnapshot(20, "Station 20"),
+                new StationSnapshot(30, "Station 30")
+            ],
 
-            _clientMock
-                .Setup(client => client.GetMetroLinesAsync(
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lines);
+            LineStations =
+            [
+                new LineStationSnapshot(1, 10, 1),
+                new LineStationSnapshot(1, 20, 2),
 
-            _clientMock
-                .Setup(client => client.GetLineStationsAsync(
-                    1,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lineStations);
+                new LineStationSnapshot(2, 20, 1),
+                new LineStationSnapshot(2, 30, 2)
+            ]
+        };
 
-            // Act
-            var result = await _sut.BuildAsync(CancellationToken.None);
+        // Act
+        var result = _sut.Build(snapshot);
 
-            // Assert
-            Assert.Equal(2, result.Connections.Count);
+        // Assert
+        Assert.Equal(4, result.Connections.Count);
 
-            Assert.Contains(
-                new GraphConnection(10, 20, 1),
-                result.Connections);
+        Assert.Contains(
+            new GraphConnection(10, 20, 1),
+            result.Connections);
 
-            Assert.Contains(
-                new GraphConnection(20, 10, 1),
-                result.Connections);
-        }
+        Assert.Contains(
+            new GraphConnection(20, 10, 1),
+            result.Connections);
 
-        [Fact]
-        public async Task BuildAsync_StationsAreUnorderd_CreatesConnectionsBasedOnSequence()
+        Assert.Contains(
+            new GraphConnection(20, 30, 2),
+            result.Connections);
+
+        Assert.Contains(
+            new GraphConnection(30, 20, 2),
+            result.Connections);
+    }
+
+    [Fact]
+    public void Build_LineHasOneStation_ReturnsEmptyGraph()
+    {
+        // Arrange
+        var snapshot = new MetroNetworkSnapshot
         {
-            // Arrange
-            IReadOnlyList<MetroLineData> lines =
+            MetroLines =
             [
-                new MetroLineData(1, "Line 1")
-            ];
+                new MetroLineSnapshot(1, "Line 1")
+            ],
 
-            IReadOnlyList<LineStationData> lineStations =
+            Stations =
             [
-                new LineStationData(1, 30, 3),
-                new LineStationData(1, 10, 1),
-                new LineStationData(1, 20, 2)
-            ];
+                new StationSnapshot(10, "Station 10")
+            ],
 
-            _clientMock
-                .Setup(client => client.GetMetroLinesAsync(
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lines);
-
-            _clientMock
-                .Setup(client => client.GetLineStationsAsync(
-                    1,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lineStations);
-
-            // Act
-            var result = await _sut.BuildAsync(CancellationToken.None);
-
-            // Assert
-            Assert.Equal(4, result.Connections.Count);
-
-            Assert.Contains(new GraphConnection(10, 20, 1), result.Connections);
-            Assert.Contains(new GraphConnection(20, 30, 1), result.Connections);
-
-            Assert.Contains(new GraphConnection(30, 20, 1), result.Connections);
-            Assert.Contains(new GraphConnection(20, 10, 1), result.Connections);
-        }
-
-        [Fact]
-        public async Task BuildAsync_MultipleLinesExist_BuildsConnectionsForEachLine()
-        {
-            // Arrange
-            IReadOnlyList<MetroLineData> lines =
+            LineStations =
             [
-                new MetroLineData(1, "Line 1"),
-                new MetroLineData(2, "Line 2")
-            ];
+                new LineStationSnapshot(1, 10, 1)
+            ]
+        };
 
-            IReadOnlyList<LineStationData> line1Stations =
-            [
-                new LineStationData(1, 10, 1),
-                new LineStationData(1, 20, 2)
-            ];
+        // Act
+        var result = _sut.Build(snapshot);
 
-            IReadOnlyList<LineStationData> line2Stations =
-            [
-                new LineStationData(2, 20, 1),
-                new LineStationData(2, 30, 2)
-            ];
-
-            _clientMock
-                .Setup(client => client.GetMetroLinesAsync(
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lines);
-
-            _clientMock
-                .Setup(client => client.GetLineStationsAsync(
-                    1,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(line1Stations);
-
-            _clientMock
-                .Setup(client => client.GetLineStationsAsync(
-                    2,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(line2Stations);
-
-            // Act
-            var result = await _sut.BuildAsync(CancellationToken.None);
-
-            // Assert
-            Assert.Equal(4, result.Connections.Count);
-
-            Assert.Contains(new GraphConnection(10, 20, 1), result.Connections);
-            Assert.Contains(new GraphConnection(20, 10, 1), result.Connections);
-
-            Assert.Contains(new GraphConnection(20, 30, 2), result.Connections);
-            Assert.Contains(new GraphConnection(30, 20, 2), result.Connections);
-        }
-
-        [Fact]
-        public async Task BuildAsync_LineHasOneStation_ReturnsEmptyGraph()
-        {
-            // Arrange
-            IReadOnlyList<MetroLineData> lines =
-            [
-                new MetroLineData(1, "Line 1")
-            ];
-
-            IReadOnlyList<LineStationData> lineStations =
-            [
-                new LineStationData(1, 10, 1)
-            ];
-
-            _clientMock
-                .Setup(client => client.GetMetroLinesAsync(
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lines);
-
-            _clientMock
-                .Setup(client => client.GetLineStationsAsync(
-                    1,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(lineStations);
-
-            // Act
-            var result = await _sut.BuildAsync(CancellationToken.None);
-
-            // Assert
-            Assert.Empty(result.Connections);
-        }
+        // Assert
+        Assert.Empty(result.Connections);
     }
 }

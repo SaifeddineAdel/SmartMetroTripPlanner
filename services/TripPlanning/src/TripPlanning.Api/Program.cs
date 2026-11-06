@@ -1,49 +1,76 @@
 using FluentValidation;
+using StackExchange.Redis;
+using TripPlanning.Api.BackgroundServices;
 using TripPlanning.Api.ExceptionHandling;
-using TripPlanning.Application.Features.PlanTrip.Abstractions;
+using TripPlanning.Application.Common.Abstractions;
 using TripPlanning.Application.Features.PlanTrip.Services;
 using TripPlanning.Application.Features.PlanTrip.Validators;
 using TripPlanning.Domain.Features.PlanTrip.Services;
-using TripPlanning.Infrastructure.Clients;
+using TripPlanning.Infrastructure.Caching;
+using TripPlanning.Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register Controllers
+// Controllers
 builder.Services.AddControllers();
 
-// Configure Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Problem Details and Global Exception Handler
+// Problem Details and Global Exception Handler
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-// Configure MetroNetwork HTTP Client
-var metroNetworkBaseUrl =
-    builder.Configuration["Services:MetroNetwork:BaseUrl"]
+// Redis Configuration
+var redisOptions = builder.Configuration
+    .GetSection(RedisOptions.SectionName)
+    .Get<RedisOptions>()
     ?? throw new InvalidOperationException(
-        "MetroNetwork BaseUrl is not configured.");
+        "Redis configuration is missing.");
 
-builder.Services.AddHttpClient<IMetroNetworkClient, MetroNetworkClient>(
-    client =>
-    {
-        client.BaseAddress = new Uri(metroNetworkBaseUrl);
-    });
+if (string.IsNullOrWhiteSpace(redisOptions.ConnectionString))
+{
+    throw new InvalidOperationException(
+        "Redis connection string is missing.");
+}
 
-// Register PlanTrip Services
-builder.Services.AddScoped<MetroGraphBuilder>();
+// Redis Connection
+var redisConnection =
+    ConnectionMultiplexer.Connect(
+        redisOptions.ConnectionString);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    redisConnection);
+
+// Redis Snapshot Reader
+builder.Services.AddSingleton<
+    IMetroNetworkSnapshotReader,
+    RedisMetroNetworkSnapshotReader>();
+
+// Metro Network Graph
+builder.Services.AddSingleton<MetroGraphBuilder>();
+
+builder.Services.AddSingleton<MetroNetworkStateProvider>();
+
+// Background Service: Sync Redis Snapshot with Local Graph
+builder.Services.AddHostedService<MetroNetworkSyncService>();
+
+// Plan Trip Services
 builder.Services.AddScoped<MetroPathFinder>();
 builder.Services.AddScoped<PlanTripService>();
 builder.Services.AddScoped<TicketFareCalculator>();
-builder.Services.AddValidatorsFromAssemblyContaining<PlanTripRequestValidator>();
+
+// FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<
+    PlanTripRequestValidator>();
 
 var app = builder.Build();
 
-// Handle exceptions globally
+// Global Exception Handling
 app.UseExceptionHandler();
 
-// Configure Swagger
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

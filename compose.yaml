@@ -24,6 +24,34 @@ services:
       retries: 10
       start_period: 30s
 
+  # Redis
+  redis:
+    image: redis:8-alpine
+    container_name: metro-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - metronetwork-network
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - redis-cli -a "$$REDIS_PASSWORD" --no-auth-warning ping | grep -q PONG
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
   # MetroNetwork API
   metro-api:
     build:
@@ -37,12 +65,15 @@ services:
       Jwt__SecretKey: ${JWT_SECRET_KEY}
       BootstrapAdmin__Email: ${BOOTSTRAP_ADMIN_EMAIL}
       BootstrapAdmin__Password: ${BOOTSTRAP_ADMIN_PASSWORD}
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD},abortConnect=false"
     ports:
       - "8081:8080"
     networks:
       - metronetwork-network
     depends_on:
       metro-sql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
 
@@ -55,7 +86,7 @@ services:
     container_name: trip-api
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-      Services__MetroNetwork__BaseUrl: http://metro-api:8080/
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD},abortConnect=false"
     ports:
       - "8082:8080"
     networks:
@@ -63,6 +94,8 @@ services:
     depends_on:
       metro-api:
         condition: service_started
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   # API Gateway
@@ -85,13 +118,16 @@ services:
       - trip-api
     restart: unless-stopped
 
-# Existing Docker Volume
+# Docker Volumes
 volumes:
   metronetwork-data:
     external: true
     name: metronetwork-data
 
-# Existing Docker Network
+  redis-data:
+    name: metro-redis-data
+
+# Docker Network
 networks:
   metronetwork-network:
     external: true

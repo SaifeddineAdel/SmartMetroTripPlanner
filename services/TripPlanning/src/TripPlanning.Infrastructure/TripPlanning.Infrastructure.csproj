@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="3.4.31" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TripPlanning.Application\TripPlanning.Application.csproj" />
     <ProjectReference Include="..\TripPlanning.Domain\TripPlanning.Domain.csproj" />
   </ItemGroup>
