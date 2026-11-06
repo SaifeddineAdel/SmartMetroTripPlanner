@@ -1,5 +1,4 @@
 ﻿using TripPlanning.Application.Common.Exceptions;
-using TripPlanning.Application.Features.PlanTrip.Abstractions;
 using TripPlanning.Application.Features.PlanTrip.DTOs;
 using TripPlanning.Domain.Features.PlanTrip.Graph;
 using TripPlanning.Domain.Features.PlanTrip.Services;
@@ -8,52 +7,46 @@ namespace TripPlanning.Application.Features.PlanTrip.Services;
 
 public sealed class PlanTripService
 {
-    private readonly IMetroNetworkClient _metroNetworkClient;
-    private readonly MetroGraphBuilder _graphBuilder;
+    private readonly MetroNetworkStateProvider _stateProvider;
     private readonly MetroPathFinder _pathFinder;
     private readonly TicketFareCalculator _fareCalculator;
 
     public PlanTripService(
-        IMetroNetworkClient metroNetworkClient,
-        MetroGraphBuilder graphBuilder,
+        MetroNetworkStateProvider stateProvider,
         MetroPathFinder pathFinder,
-        TicketFareCalculator fareCalculator )
+        TicketFareCalculator fareCalculator)
     {
-        _metroNetworkClient = metroNetworkClient;
-        _graphBuilder = graphBuilder;
+        _stateProvider = stateProvider;
         _pathFinder = pathFinder;
         _fareCalculator = fareCalculator;
     }
 
-    public async Task<TripPlanResponse> PlanAsync(
+    public Task<TripPlanResponse> PlanAsync(
         PlanTripRequest request,
         CancellationToken cancellationToken)
     {
-        var stations = await _metroNetworkClient
-            .GetStationsAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var start = stations.FirstOrDefault(
-            station => station.Id == request.StartStationId);
+        var networkState = _stateProvider.GetCurrentState();
 
-        var destination = stations.FirstOrDefault(
-            station => station.Id == request.DestinationStationId);
-
-        if (start is null || destination is null)
+        if (!networkState.StationsById.TryGetValue(
+            request.StartStationId,
+            out var start))
         {
             throw new NotFoundException(
-                "The start station or destination station was not found.");
+                "The start station was not found.");
         }
 
-        var lines = await _metroNetworkClient
-            .GetMetroLinesAsync(cancellationToken);
-
-        var stationsById = stations.ToDictionary(s => s.Id);
-        var linesById = lines.ToDictionary(l => l.Id);
-
-        var graph = await _graphBuilder.BuildAsync(cancellationToken);
+        if (!networkState.StationsById.TryGetValue(
+            request.DestinationStationId,
+            out var destination))
+        {
+            throw new NotFoundException(
+                "The destination station was not found.");
+        }
 
         var path = _pathFinder.FindShortestPath(
-            graph,
+            networkState.Graph,
             start.Id,
             destination.Id);
 
@@ -63,22 +56,28 @@ public sealed class PlanTripService
                 "No route exists between the selected stations.");
         }
 
-        var segments = BuildSegments(path, stationsById, linesById);
+        var segments = BuildSegments(
+            path,
+            networkState.StationsById,
+            networkState.MetroLinesById);
 
         var totalStationsCount = path.Count + 1;
 
         var totalMinutes = path.Sum(connection =>
             connection.MetroLineId == 1 ? 2.5 : 2.0);
 
-        var fare = _fareCalculator.Calculate(totalStationsCount);
+        var fare = _fareCalculator.Calculate(
+            totalStationsCount);
 
-        return new TripPlanResponse(
+        var response = new TripPlanResponse(
             start,
             destination,
             segments,
             totalStationsCount,
             totalMinutes,
             fare);
+
+        return Task.FromResult(response);
     }
 
     private static IReadOnlyList<TripSegmentResponse> BuildSegments(

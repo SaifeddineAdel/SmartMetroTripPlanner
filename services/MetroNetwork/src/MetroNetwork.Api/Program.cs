@@ -1,6 +1,8 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MetroNetwork.Api.Common.BackgroundServices;
 using MetroNetwork.Api.Common.ExceptionHandling;
+using MetroNetwork.Application.Common.Abstractions;
 using MetroNetwork.Application.Features.Auth.Configuration;
 using MetroNetwork.Application.Features.Auth.Repositories;
 using MetroNetwork.Application.Features.Auth.Services;
@@ -9,6 +11,8 @@ using MetroNetwork.Application.Features.LineStations;
 using MetroNetwork.Application.Features.MetroLines;
 using MetroNetwork.Application.Features.Stations;
 using MetroNetwork.Application.Features.Stations.Validators;
+using MetroNetwork.Infrastructure.Caching;
+using MetroNetwork.Infrastructure.Configuration;
 using MetroNetwork.Infrastructure.Features.LineStations;
 using MetroNetwork.Infrastructure.Features.MetroLines;
 using MetroNetwork.Infrastructure.Features.Stations;
@@ -17,6 +21,7 @@ using MetroNetwork.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +52,35 @@ var connectionString = builder.Configuration
 
 builder.Services.AddDbContext<MetroNetworkDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+// Redis Configuration
+var redisOptions = builder.Configuration
+    .GetSection(RedisOptions.SectionName)
+    .Get<RedisOptions>()
+    ?? throw new InvalidOperationException(
+        "Redis configuration is missing.");
+
+if (string.IsNullOrWhiteSpace(redisOptions.ConnectionString))
+{
+    throw new InvalidOperationException(
+        "Redis connection string is missing.");
+}
+
+// Redis Connection
+var redisConnection =
+    ConnectionMultiplexer.Connect(
+        redisOptions.ConnectionString);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    redisConnection);
+
+// MetroNetwork Snapshot Publisher
+builder.Services.AddScoped<
+    IMetroNetworkSnapshotPublisher,
+    RedisMetroNetworkSnapshotPublisher>();
+
+builder.Services.AddHostedService<
+    MetroNetworkSnapshotPublishingService>();
 
 // JWT Configuration
 builder.Services.Configure<JwtOptions>(

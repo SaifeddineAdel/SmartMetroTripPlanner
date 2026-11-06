@@ -1,34 +1,21 @@
-﻿using TripPlanning.Application.Features.PlanTrip.Abstractions;
+﻿using TripPlanning.Application.Common.DTOs;
 using TripPlanning.Domain.Features.PlanTrip.Graph;
 
 namespace TripPlanning.Application.Features.PlanTrip.Services;
 
 public sealed class MetroGraphBuilder
 {
-    private readonly IMetroNetworkClient _metroNetworkClient;
-
-    public MetroGraphBuilder(IMetroNetworkClient metroNetworkClient)
+    public MetroGraph Build(MetroNetworkSnapshot snapshot)
     {
-        _metroNetworkClient = metroNetworkClient;
-    }
-
-    public async Task<MetroGraph> BuildAsync(
-        CancellationToken cancellationToken)
-    {
-        var lines = await _metroNetworkClient.GetMetroLinesAsync(
-            cancellationToken);
-
         var graph = new MetroGraph();
 
-        foreach (var line in lines)
-        {
-            var lineStations =
-                await _metroNetworkClient.GetLineStationsAsync(
-                    line.Id,
-                    cancellationToken);
+        var groupedLineStations = snapshot.LineStations
+            .GroupBy(lineStation => lineStation.MetroLineId);
 
-            var orderedStations = lineStations
-                .OrderBy(station => station.Sequence)
+        foreach (var lineGroup in groupedLineStations)
+        {
+            var orderedStations = lineGroup
+                .OrderBy(lineStation => lineStation.Sequence)
                 .ToList();
 
             for (var i = 0; i < orderedStations.Count - 1; i++)
@@ -40,13 +27,13 @@ public sealed class MetroGraphBuilder
                     new GraphConnection(
                         currentStation.StationId,
                         nextStation.StationId,
-                        line.Id));
+                        currentStation.MetroLineId));
 
                 graph.AddConnection(
                     new GraphConnection(
                         nextStation.StationId,
                         currentStation.StationId,
-                        line.Id));
+                        currentStation.MetroLineId));
             }
         }
 
