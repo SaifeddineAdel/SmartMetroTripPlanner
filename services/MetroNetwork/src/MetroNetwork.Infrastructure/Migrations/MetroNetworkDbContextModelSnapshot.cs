@@ -72,6 +72,11 @@ namespace MetroNetwork.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -161,17 +166,21 @@ namespace MetroNetwork.Infrastructure.Migrations
 
             modelBuilder.Entity("MetroNetwork.Domain.Features.LineStations.LineStation", b =>
                 {
-                    b.HasOne("MetroNetwork.Domain.Features.MetroLines.MetroLine", null)
-                        .WithMany()
+                    b.HasOne("MetroNetwork.Domain.Features.MetroLines.MetroLine", "MetroLine")
+                        .WithMany("LineStations")
                         .HasForeignKey("MetroLineId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MetroNetwork.Domain.Features.Stations.Station", null)
-                        .WithMany()
+                    b.HasOne("MetroNetwork.Domain.Features.Stations.Station", "Station")
+                        .WithMany("LineStations")
                         .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("MetroLine");
+
+                    b.Navigation("Station");
                 });
 
             modelBuilder.Entity("MetroNetwork.Domain.Features.Users.RefreshToken", b =>
@@ -183,6 +192,16 @@ namespace MetroNetwork.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MetroNetwork.Domain.Features.MetroLines.MetroLine", b =>
+                {
+                    b.Navigation("LineStations");
+                });
+
+            modelBuilder.Entity("MetroNetwork.Domain.Features.Stations.Station", b =>
+                {
+                    b.Navigation("LineStations");
                 });
 #pragma warning restore 612, 618
         }

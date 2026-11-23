@@ -2,6 +2,8 @@
 using MetroNetwork.Application.Features.Stations;
 using MetroNetwork.Domain.Features.Stations;
 using MetroNetwork.Infrastructure.Persistence;
+using MetroNetwork.Application.Common.DTOs;
+using MetroNetwork.Application.Features.Stations.DTOs;
 
 namespace MetroNetwork.Infrastructure.Features.Stations;
 
@@ -24,13 +26,31 @@ public sealed class StationRepository : IStationRepository
                 cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Station>> GetAllAsync(
+    public async Task<PagedResponse<StationResponse>> GetAllAsync(
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Stations
+        var query = _context.Stations
             .AsNoTracking()
-            .OrderBy(x => x.Name)
+            .OrderBy(x => x.Name);
+
+        var totalCount = await _context.Stations.CountAsync(cancellationToken);
+
+        var stations = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new StationResponse(
+                x.Id,
+                x.Name,
+                x.Description))
             .ToListAsync(cancellationToken);
+
+        return new PagedResponse<StationResponse>(
+            stations,
+            pageNumber,
+            pageSize,
+            totalCount);
     }
 
     public async Task AddAsync(
