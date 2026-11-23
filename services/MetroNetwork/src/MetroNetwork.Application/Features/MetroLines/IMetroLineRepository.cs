@@ -19,6 +19,13 @@ public interface IMetroLineRepository
         int metroLineId,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<MetroLine>> GetAllWithStationsAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<MetroLine?> GetByIdWithStationsAsync(
+        int id,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(
         MetroLine metroLine,
         CancellationToken cancellationToken = default);

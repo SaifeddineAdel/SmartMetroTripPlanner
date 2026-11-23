@@ -53,6 +53,30 @@ public sealed class MetroLineRepository : IMetroLineRepository
             cancellationToken);
     }
 
+    public async Task<IReadOnlyList<MetroLine>> GetAllWithStationsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.MetroLines
+            .AsNoTracking()
+            .Include(x => x.LineStations)
+                .ThenInclude(x => x.Station)
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<MetroLine?> GetByIdWithStationsAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.MetroLines
+            .AsNoTracking()
+            .Include(x => x.LineStations)
+                .ThenInclude(x => x.Station)
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
     public async Task AddAsync(
         MetroLine metroLine,
         CancellationToken cancellationToken = default)
