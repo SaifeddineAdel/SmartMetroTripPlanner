@@ -1,0 +1,177 @@
+<section class="page-header">
+    <div>
+        <span class="eyebrow">SMART METRO PLANNER</span>
+        <h1>Plan Your Journey</h1>
+        <p>Find the best route between two metro stations.</p>
+    </div>
+</section>
+
+@if (loading()) {
+    <div class="state-message">
+        <p>Loading stations...</p>
+    </div>
+}
+@else if (stationError()) {
+    <div class="state-message error-message">
+        <p>{{ stationError() }}</p>
+    </div>
+}
+@else {
+    <section class="trip-form">
+        <div class="form-heading">
+            <span class="section-label">NEW JOURNEY</span>
+            <h2>Where are you going?</h2>
+            <p>Select your starting point and destination.</p>
+        </div>
+
+        <div class="stations-selection">
+            <div class="form-group">
+                <label for="startStation">Starting Station</label>
+
+                <select
+                    id="startStation"
+                    [ngModel]="startStationId()"
+                    (ngModelChange)="startStationId.set($event ? +$event : null)"
+                >
+                    <option [ngValue]="null" disabled>
+                        Select starting station
+                    </option>
+
+                    @for (station of stations(); track station.id) {
+                        <option [ngValue]="station.id">
+                            {{ station.name }}
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="destinationStation">Destination Station</label>
+
+                <select
+                    id="destinationStation"
+                    [ngModel]="destinationStationId()"
+                    (ngModelChange)="destinationStationId.set($event ? +$event : null)"
+                >
+                    <option [ngValue]="null" disabled>
+                        Select destination station
+                    </option>
+
+                    @for (station of stations(); track station.id) {
+                        <option [ngValue]="station.id">
+                            {{ station.name }}
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <button
+            class="plan-button"
+            type="button"
+            [disabled]="planning() || loading()"
+            (click)="planTrip()"
+        >
+            {{ planning() ? 'Planning Journey...' : 'Find Route' }}
+        </button>
+
+        @if (planError()) {
+            <p class="error-message plan-error">{{ planError() }}</p>
+        }
+    </section>
+}
+
+@if (tripPlan(); as plan) {
+    <section class="trip-result">
+        <div class="result-header">
+            <div>
+                <span class="eyebrow">YOUR JOURNEY</span>
+                <h2>Trip Overview</h2>
+            </div>
+        </div>
+
+        <div class="journey-overview">
+            <div class="journey-point">
+                <span class="point-label">FROM</span>
+                <strong>{{ plan.startStation.name }}</strong>
+            </div>
+
+            <div class="journey-point">
+                <span class="point-label">TO</span>
+                <strong>{{ plan.destinationStation.name }}</strong>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <span class="summary-label">Total Stations</span>
+                <strong>{{ plan.totalStationCount }}</strong>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-label">Estimated Time</span>
+                <strong>{{ plan.totalEstimatedMinutes }} min</strong>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-label">Ticket Fare</span>
+                <strong>{{ plan.fare }} EGP</strong>
+            </div>
+        </div>
+
+        <div class="route-section">
+            <div class="route-heading">
+                <div>
+                    <span class="section-label">ROUTE DETAILS</span>
+                    <h3>Your Route</h3>
+                </div>
+            </div>
+
+            @for (segment of plan.segments; track $index) {
+                <div
+                    class="route-segment"
+                    [class.line-1]="segment.metroLine.id === 1"
+                    [class.line-2]="segment.metroLine.id === 2"
+                    [class.line-3]="segment.metroLine.id === 3"
+                >
+                    <div class="segment-header">
+                        <div class="line-title">
+                            <span class="line-label">METRO LINE</span>
+                            <h4>{{ segment.metroLine.name }}</h4>
+                        </div>
+
+                        <span class="segment-stations">
+                            {{ segment.stationCount }}
+                            {{ segment.stationCount === 1 ? 'Station' : 'Stations' }}
+                        </span>
+                    </div>
+
+                    <div class="route-stations">
+                        @for (station of segment.stations; track station.id) {
+                            <div class="route-station">
+                                <div class="station-marker"></div>
+
+                                <div class="station-info">
+                                    <span class="station-name">
+                                        {{ station.name }}
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="segment-footer">
+                        <span>Estimated journey time</span>
+                        <strong>{{ segment.estimatedMinutes }} min</strong>
+                    </div>
+                </div>
+
+                @if (segment.isTransferAfter) {
+                    <div class="line-switch">
+                        <span class="transfer-badge">TRANSFER LINE</span>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+}

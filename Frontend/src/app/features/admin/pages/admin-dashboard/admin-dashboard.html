@@ -1,0 +1,63 @@
+<div class="admin-layout">
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div>
+        <strong>METRO FLOW</strong>
+        <small>ADMIN PANEL</small>
+      </div>
+    </div>
+
+    <div class="nav-label">MANAGEMENT</div>
+
+    <nav>
+      <a
+        routerLink="/admin"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="active">
+        Overview
+      </a>
+
+      <a
+        routerLink="/admin/stations"
+        routerLinkActive="active">
+        Stations
+      </a>
+
+      <a
+        routerLink="/admin/metro-lines"
+        routerLinkActive="active">
+        Metro Lines
+      </a>
+
+      <a
+        routerLink="/admin/line-stations"
+        routerLinkActive="active">
+        Line Stations
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" (click)="logout()">
+        Sign Out
+      </button>
+    </div>
+
+  </aside>
+
+  <main class="admin-main">
+
+    <header class="topbar">
+      <div>
+        <h2>Administration</h2>
+      </div>
+
+      <span class="admin-label">Administrator</span>
+    </header>
+
+    <section class="content">
+      <router-outlet />
+    </section>
+
+  </main>
+</div>

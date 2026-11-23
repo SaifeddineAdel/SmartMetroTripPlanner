@@ -1,0 +1,180 @@
+:host {
+  display: block;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.eyebrow {
+  color: #197b78;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+h1 {
+  margin: 7px 0;
+  font-size: 28px;
+}
+
+.page-header p {
+  color: #64748b;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 7px;
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: #197b78;
+  color: white;
+}
+
+.primary:hover:not(:disabled) {
+  background: #146663;
+}
+
+.secondary {
+  background: #e6f3f2;
+  color: #197b78;
+}
+
+.form-card {
+  background: white;
+  border: 1px solid #e2e8e8;
+  border-radius: 12px;
+  padding: 22px;
+  max-width: 550px;
+  margin-bottom: 22px;
+}
+
+.form-card h2 {
+  margin: 0 0 20px;
+  font-size: 17px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #197b78;
+  box-shadow: 0 0 0 2px rgba(25, 123, 120, 0.12);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.line-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+}
+
+.line-card {
+  background: white;
+  border: 1px solid #e2e8e8;
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.line-top {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.line-id {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.line-card h2 {
+  margin: 8px 0 7px;
+  font-size: 19px;
+}
+
+.line-card p {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.station-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 15px 0 20px;
+  min-height: 26px;
+}
+
+.station-preview span {
+  background: #e6f3f2;
+  color: #197b78;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit {
+  background: #e6f3f2;
+  color: #197b78;
+}
+
+.delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.empty {
+  color: #64748b;
+  text-align: center;
+  padding: 35px;
+}
+
+.message {
+  padding: 12px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

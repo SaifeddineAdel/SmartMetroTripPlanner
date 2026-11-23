@@ -1,0 +1,28 @@
+<div class="line-card">
+    <div class="line-header">
+        <div class="line-title">
+            <span class="line-label">METRO LINE</span>
+            <h2>{{ metroLine().name }}</h2>
+        </div>
+
+        <div class="station-count">
+            <strong>{{ metroLine().stations.length }}</strong>
+            <small>Stations</small>
+        </div>
+    </div>
+
+    <div class="stations-route">
+        @for (station of metroLine().stations; track station.id) {
+            <div class="route-station">
+                <div class="route-marker"></div>
+
+                <div class="route-info">
+                    <span class="sequence">{{ station.sequence }}</span>
+                    <span class="station-name">{{ station.name }}</span>
+                </div>
+            </div>
+        } @empty {
+            <p class="empty-message">No stations in this line.</p>
+        }
+    </div>
+</div>

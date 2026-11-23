@@ -1,0 +1,122 @@
+<div class="page-header">
+  <div>
+    <span class="eyebrow">MANAGEMENT</span>
+    <h1>Line Stations</h1>
+    <p>Assign stations to metro lines and manage their order.</p>
+  </div>
+</div>
+
+<div class="selection-card">
+  <label>Select Metro Line</label>
+
+  <select
+    [ngModel]="selectedLineId()"
+    (ngModelChange)="selectLine($event)"
+  >
+    <option [ngValue]="null">Choose a metro line</option>
+
+    @for (line of lines(); track line.id) {
+      <option [ngValue]="line.id">{{ line.name }}</option>
+    }
+  </select>
+</div>
+
+@if (selectedLineId() !== null) {
+
+  <div class="form-card">
+    <h2>Add Station to Line</h2>
+
+    <div class="form-grid">
+      <div>
+        <label>Station</label>
+
+        <select [(ngModel)]="selectedStationId">
+          <option [ngValue]="null">Select station</option>
+
+          @for (station of availableStations(); track station.id) {
+            <option [ngValue]="station.id">
+              {{ station.name }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label>Sequence</label>
+
+        <input
+          type="number"
+          min="1"
+          [(ngModel)]="newSequence"
+        />
+      </div>
+    </div>
+
+    <button
+      class="primary"
+      (click)="addStation()"
+      [disabled]="saving()"
+    >
+      {{ saving() ? 'Adding...' : '+ Add Station' }}
+    </button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <div>
+        <h2>Stations in Line</h2>
+        <p>{{ lineStations().length }} stations assigned</p>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <p class="empty">Loading stations...</p>
+    } @else if (lineStations().length === 0) {
+      <p class="empty">
+        No stations assigned to this line yet.
+      </p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Sequence</th>
+              <th>Station ID</th>
+              <th>Station Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (item of lineStations(); track item.stationId) {
+              <tr>
+                <td>
+                  <input
+                    class="sequence-input"
+                    type="number"
+                    min="1"
+                    [ngModel]="item.sequence"
+                    (ngModelChange)="updateSequence(item, $event)"
+                  />
+                </td>
+
+                <td>#{{ item.stationId }}</td>
+
+                <td>{{ getStationName(item.stationId) }}</td>
+
+                <td>
+                  <button
+                    class="delete"
+                    (click)="removeStation(item)"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

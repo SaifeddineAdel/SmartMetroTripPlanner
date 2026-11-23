@@ -1,0 +1,43 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-icon">
+      <span>🚇</span>
+    </div>
+
+    <span class="eyebrow">SMART METRO</span>
+    <h1>Admin Portal</h1>
+    <p>Sign in to manage the metro network.</p>
+
+    <form (ngSubmit)="login()">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        placeholder="admin@example.com"
+        required
+      />
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+        placeholder="Enter your password"
+        required
+      />
+
+      @if (error()) {
+        <div class="error-message">{{ error() }}</div>
+      }
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+  </div>
+</div>

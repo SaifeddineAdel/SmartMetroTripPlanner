@@ -1,0 +1,84 @@
+<section class="page-header">
+    <div>
+        <span class="eyebrow">METRO NETWORK</span>
+        <h1>Metro Lines</h1>
+        <p>Select a metro line to explore its stations.</p>
+    </div>
+</section>
+
+<section class="lines-section">
+    <div class="lines-grid">
+        @for (line of lines; track line.id) {
+            <button
+                type="button"
+                class="line-button"
+                [class.line-1]="line.id === 1"
+                [class.line-2]="line.id === 2"
+                [class.line-3]="line.id === 3"
+                [class.active]="selectedLineId() === line.id"
+                [attr.aria-pressed]="selectedLineId() === line.id"
+                [disabled]="loading()"
+                (click)="selectLine(line.id)"
+            >
+                {{ line.name }}
+            </button>
+        }
+    </div>
+</section>
+
+@if (loading()) {
+    <div class="state-message">
+        <p>Loading stations...</p>
+    </div>
+}
+@else if (error()) {
+    <div class="state-message error-message">
+        <p>{{ error() }}</p>
+    </div>
+}
+@else if (selectedLine(); as line) {
+    <section
+        class="stations-section"
+        [class.line-1]="line.id === 1"
+        [class.line-2]="line.id === 2"
+        [class.line-3]="line.id === 3"
+    >
+        <div class="section-header">
+            <div>
+                <span class="eyebrow">SELECTED METRO LINE</span>
+                <h2>{{ line.name }}</h2>
+            </div>
+
+            <span class="station-count">
+                {{ line.stations.length }}
+                {{ line.stations.length === 1 ? 'Station' : 'Stations' }}
+            </span>
+        </div>
+
+        <div class="stations-list">
+            @for (station of line.stations; track station.id; let last = $last) {
+                <div class="station-item">
+                    <div class="station-timeline">
+                        <span class="station-dot"></span>
+
+                        @if (!last) {
+                            <span class="station-connector"></span>
+                        }
+                    </div>
+
+                    <div class="station-name">
+                        {{ station.name }}
+                    </div>
+                </div>
+            } @empty {
+                <p class="empty-message">No stations found for this line.</p>
+            }
+        </div>
+    </section>
+}
+@else {
+    <div class="empty-state">
+        <h2>Choose a Metro Line</h2>
+        <p>Select one of the lines above to view its stations.</p>
+    </div>
+}

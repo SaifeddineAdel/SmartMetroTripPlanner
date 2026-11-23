@@ -1,0 +1,102 @@
+<section class="page-header">
+    <div>
+        <span class="eyebrow">METRO NETWORK</span>
+        <h1>Metro Stations</h1>
+        <p>Explore stations across the metro network.</p>
+    </div>
+</section>
+
+@if (loading()) {
+    <div class="state-message">
+        <p>Loading stations...</p>
+    </div>
+}
+@else if (error()) {
+    <div class="state-message error-message">
+        <p>{{ error() }}</p>
+    </div>
+}
+@else {
+    <div class="search-box">
+        <span class="search-icon">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="19"
+                height="19"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        </span>
+
+        <input
+            type="search"
+            placeholder="Search stations by name..."
+            aria-label="Search stations by name"
+            [value]="searchTerm()"
+            (input)="searchTerm.set($any($event.target).value)"
+        />
+    </div>
+
+    <div class="stations-grid">
+        @for (station of filteredStations(); track station.id) {
+            <app-station-card [station]="station" />
+        } @empty {
+            <div class="state-message empty-message">
+                <p>
+                    {{ searchTerm().trim()
+                        ? 'No stations match your search.'
+                        : 'No stations found.' }}
+                </p>
+            </div>
+        }
+    </div>
+
+    @if (totalPages() > 1) {
+        <nav class="pagination" aria-label="Stations pagination">
+
+            <button
+                class="pagination-button"
+                type="button"
+                [disabled]="!hasPreviousPage()"
+                (click)="previousPage()"
+            >
+                Previous
+            </button>
+
+            <div class="pagination-pages">
+                @for (page of pageNumbers(); track page) {
+                    <button
+                        class="pagination-page"
+                        type="button"
+                        [class.active]="page === pageNumber()"
+                        [attr.aria-current]="page === pageNumber() ? 'page' : null"
+                        (click)="goToPage(page)"
+                    >
+                        {{ page }}
+                    </button>
+                }
+            </div>
+
+            <button
+                class="pagination-button"
+                type="button"
+                [disabled]="!hasNextPage()"
+                (click)="nextPage()"
+            >
+                Next
+            </button>
+
+        </nav>
+
+        <div class="pagination-info">
+            Page {{ pageNumber() }} of {{ totalPages() }}
+        </div>
+    }
+}

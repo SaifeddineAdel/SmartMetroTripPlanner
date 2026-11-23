@@ -1,0 +1,41 @@
+<header class="navbar">
+    <div class="navbar-container">
+
+        <a routerLink="/plan-trip" class="brand">
+            <img
+                src="/metro-flow.png"
+                alt="Metro Flow"
+                class="brand-logo">
+        </a>
+
+        <nav class="nav-links">
+
+            <a
+                routerLink="/plan-trip"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Plan Trip
+            </a>
+
+            <a
+                routerLink="/stations"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Stations
+            </a>
+
+            <a
+                routerLink="/line-stations"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Metro Lines
+            </a>
+
+        </nav>
+
+    </div>
+</header>
+
+<main class="main-container">
+    <router-outlet />
+</main>
