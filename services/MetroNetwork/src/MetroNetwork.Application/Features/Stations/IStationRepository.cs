@@ -22,4 +22,8 @@ public interface IStationRepository
     Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default);
+
+    Task<Station?> GetByIdWithDetailsAsync(
+        int id,
+        CancellationToken cancellationToken = default);
 }

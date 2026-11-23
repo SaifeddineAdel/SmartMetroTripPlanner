@@ -15,13 +15,14 @@ public sealed class StationService : IStationService
 
     public async Task<StationResponse> CreateAsync(
         string name,
+        string description,
         CancellationToken cancellationToken = default)
     {
         await EnsureStationNameIsUniqueAsync(
             name,
             cancellationToken);
 
-        var station = Station.Create(name);
+        var station = Station.Create(name, description);
 
         await _repository.AddAsync(
             station,
@@ -79,7 +80,7 @@ public sealed class StationService : IStationService
         if (IsSameName(station.Name, newName))
         {
             throw new ConflictException(
-                    "The new station name is the same as the current name.");
+                "The new station name is the same as the current name.");
         }
 
         await EnsureStationNameIsUniqueAsync(
@@ -87,6 +88,27 @@ public sealed class StationService : IStationService
             cancellationToken);
 
         station.Rename(newName);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    public async Task UpdateDescriptionAsync(
+        int id,
+        string description,
+        CancellationToken cancellationToken = default)
+    {
+        var station = await _repository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (station is null)
+        {
+            throw new NotFoundException(
+                $"Station with ID '{id}' was not found.");
+        }
+
+        station.UpdateDescription(description);
 
         await _repository.SaveChangesAsync(
             cancellationToken);
@@ -141,6 +163,7 @@ public sealed class StationService : IStationService
     {
         return new StationResponse(
             station.Id,
-            station.Name);
+            station.Name,
+            station.Description);
     }
 }

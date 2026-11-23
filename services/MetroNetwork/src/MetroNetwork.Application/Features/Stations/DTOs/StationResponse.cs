@@ -2,4 +2,5 @@
 
 public sealed record StationResponse(
     int Id,
-    string Name);
+    string Name,
+    string Description);

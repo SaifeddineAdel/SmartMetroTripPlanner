@@ -6,6 +6,7 @@ public interface IStationService
 {
     Task<StationResponse> CreateAsync(
         string name,
+        string description,
         CancellationToken cancellationToken = default);
 
     Task<StationResponse> GetByIdAsync(
@@ -22,5 +23,10 @@ public interface IStationService
 
     Task DeleteAsync(
         int id,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateDescriptionAsync(
+        int id,
+        string description,
         CancellationToken cancellationToken = default);
 }
