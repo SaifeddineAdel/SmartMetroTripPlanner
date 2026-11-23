@@ -1,4 +1,5 @@
-﻿using MetroNetwork.Application.Common.Exceptions;
+﻿using MetroNetwork.Application.Common.DTOs;
+using MetroNetwork.Application.Common.Exceptions;
 using MetroNetwork.Application.Features.Stations.DTOs;
 using MetroNetwork.Domain.Features.Stations;
 
@@ -51,17 +52,16 @@ public sealed class StationService : IStationService
         return MapToResponse(station);
     }
 
-    public async Task<IReadOnlyList<StationResponse>> GetAllAsync(
+    public async Task<PagedResponse<StationResponse>> GetAllAsync(
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var stations = await _repository.GetAllAsync(
+        return await _repository.GetAllAsync(
+            pageNumber,
+            pageSize,
             cancellationToken);
-
-        return stations
-            .Select(MapToResponse)
-            .ToList();
     }
-
     public async Task RenameAsync(
         int id,
         string newName,

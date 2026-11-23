@@ -1,10 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FluentValidation;
+using MetroNetwork.Application.Features.Stations.DTOs;
 
-namespace MetroNetwork.Application.Validators
+namespace MetroNetwork.Application.Features.Stations.Validators;
+
+public sealed class UpdateStationDescriptionRequestValidator
+    : AbstractValidator<UpdateStationDescriptionRequest>
 {
-    internal class UpdateStationDescriptionRequestValidator
+    public UpdateStationDescriptionRequestValidator()
     {
+        RuleFor(x => x.Description)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("Station description is required.")
+            .MaximumLength(500)
+            .WithMessage("Station description cannot exceed 500 characters.");
     }
 }

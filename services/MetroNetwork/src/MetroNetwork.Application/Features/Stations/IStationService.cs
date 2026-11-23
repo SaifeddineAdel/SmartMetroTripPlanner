@@ -1,4 +1,5 @@
 ﻿using MetroNetwork.Application.Features.Stations.DTOs;
+using MetroNetwork.Application.Common.DTOs;
 
 namespace MetroNetwork.Application.Features.Stations;
 
@@ -13,7 +14,9 @@ public interface IStationService
         int id,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<StationResponse>> GetAllAsync(
+    Task<PagedResponse<StationResponse>> GetAllAsync(
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default);
 
     Task RenameAsync(

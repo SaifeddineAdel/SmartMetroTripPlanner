@@ -1,9 +1,6 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MetroNetwork.Domain.Features.LineStations;
-using MetroNetwork.Domain.Features.MetroLines;
-using MetroNetwork.Domain.Features.Stations;
 
 namespace MetroNetwork.Infrastructure.Persistence.Configurations;
 
@@ -30,13 +27,13 @@ public sealed class LineStationConfiguration
         })
         .IsUnique();
 
-        builder.HasOne<MetroLine>()
+        builder.HasOne(x => x.MetroLine)
             .WithMany(x => x.LineStations)
             .HasForeignKey(x => x.MetroLineId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Station)
-            .WithMany()
+            .WithMany(x => x.LineStations)
             .HasForeignKey(x => x.StationId)
             .OnDelete(DeleteBehavior.Restrict);
     }
