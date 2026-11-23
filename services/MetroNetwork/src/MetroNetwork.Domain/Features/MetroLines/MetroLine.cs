@@ -1,4 +1,5 @@
 ﻿using MetroNetwork.Domain.Common.Exceptions;
+using MetroNetwork.Domain.Features.LineStations;
 
 namespace MetroNetwork.Domain.Features.MetroLines;
 
@@ -7,6 +8,9 @@ public sealed class MetroLine
     public int Id { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
+
+    public ICollection<LineStation> LineStations { get; private set; }
+        = new List<LineStation>();
 
     private MetroLine()
     {

@@ -33,9 +33,15 @@ public sealed class MetroLineService : IMetroLineService
         int id,
         CancellationToken cancellationToken = default)
     {
-        var metroLine = await GetRequiredMetroLineAsync(
+        var metroLine = await _repository.GetByIdWithStationsAsync(
             id,
             cancellationToken);
+
+        if (metroLine is null)
+        {
+            throw new NotFoundException(
+                $"Metro line with ID '{id}' was not found.");
+        }
 
         return MapToResponse(metroLine);
     }
@@ -43,7 +49,7 @@ public sealed class MetroLineService : IMetroLineService
     public async Task<IReadOnlyList<MetroLineResponse>> GetAllAsync(
         CancellationToken cancellationToken = default)
     {
-        var metroLines = await _repository.GetAllAsync(cancellationToken);
+        var metroLines = await _repository.GetAllWithStationsAsync(cancellationToken);
 
         return metroLines
             .Select(MapToResponse)
@@ -137,6 +143,13 @@ public sealed class MetroLineService : IMetroLineService
     {
         return new MetroLineResponse(
             metroLine.Id,
-            metroLine.Name);
+            metroLine.Name,
+            metroLine.LineStations
+                .OrderBy(x => x.Sequence)
+                .Select(x => new MetroLineStationResponse(
+                    x.StationId,
+                    x.Station.Name,
+                    x.Sequence))
+                .ToList());
     }
 }

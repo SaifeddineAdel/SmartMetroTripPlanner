@@ -31,11 +31,11 @@ public sealed class LineStationConfiguration
         .IsUnique();
 
         builder.HasOne<MetroLine>()
-            .WithMany()
+            .WithMany(x => x.LineStations)
             .HasForeignKey(x => x.MetroLineId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<Station>()
+        builder.HasOne(x => x.Station)
             .WithMany()
             .HasForeignKey(x => x.StationId)
             .OnDelete(DeleteBehavior.Restrict);

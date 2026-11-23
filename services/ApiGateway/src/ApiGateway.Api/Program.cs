@@ -3,6 +3,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Register controllers
 builder.Services.AddControllers();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularClient", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Configure YARP Reverse Proxy
 builder.Services
     .AddReverseProxy()
@@ -19,8 +31,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// Redirect HTTP requests to HTTPS
 app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors("AngularClient");
 
 // Enable authorization middleware
 app.UseAuthorization();
