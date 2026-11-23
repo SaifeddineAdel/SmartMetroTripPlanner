@@ -57,4 +57,18 @@ public sealed class StationRepository : IStationRepository
                 x => x.Name.ToLower() == normalizedName.ToLower(),
                 cancellationToken);
     }
+
+    public async Task<Station?> GetByIdWithDetailsAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Stations
+            .AsNoTracking()
+            .Include(x => x.LineStations)
+                .ThenInclude(x => x.MetroLine)
+                    .ThenInclude(x => x.LineStations)
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
 }

@@ -18,9 +18,7 @@ public sealed class StationsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(
-        typeof(StationResponse),
-        StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(StationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -31,6 +29,7 @@ public sealed class StationsController : ControllerBase
     {
         var response = await _stationService.CreateAsync(
             request.Name,
+            request.Description,
             cancellationToken);
 
         return CreatedAtAction(
@@ -41,9 +40,7 @@ public sealed class StationsController : ControllerBase
 
     [HttpGet("{id:int}")]
     [AllowAnonymous]
-    [ProducesResponseType(
-        typeof(StationResponse),
-        StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(StationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<StationResponse>> GetById(
         int id,
@@ -58,14 +55,11 @@ public sealed class StationsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType(
-        typeof(IReadOnlyList<StationResponse>),
-        StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<StationResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<StationResponse>>> GetAll(
         CancellationToken cancellationToken)
     {
-        var response = await _stationService.GetAllAsync(
-            cancellationToken);
+        var response = await _stationService.GetAllAsync(cancellationToken);
 
         return Ok(response);
     }
@@ -91,6 +85,26 @@ public sealed class StationsController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("{id:int}/description")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateDescription(
+        int id,
+        [FromBody] UpdateStationDescriptionRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _stationService.UpdateDescriptionAsync(
+            id,
+            request.Description,
+            cancellationToken);
+
+        return NoContent();
+    }
+
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -101,9 +115,7 @@ public sealed class StationsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
-        await _stationService.DeleteAsync(
-            id,
-            cancellationToken);
+        await _stationService.DeleteAsync(id, cancellationToken);
 
         return NoContent();
     }
