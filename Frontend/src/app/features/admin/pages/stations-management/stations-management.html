@@ -1,0 +1,119 @@
+<div class="page-header">
+  <div>
+    <span class="eyebrow">MANAGEMENT</span>
+    <h1>Stations</h1>
+    <p>Manage all metro stations.</p>
+  </div>
+
+  <button class="primary" (click)="openCreate()">
+    + Add Station
+  </button>
+</div>
+
+@if (showForm()) {
+  <div class="form-card">
+    <h2>
+      {{ editingStation() ? 'Edit Station' : 'Create Station' }}
+    </h2>
+
+    <label>Station Name</label>
+    <input
+      [(ngModel)]="name"
+      placeholder="Enter station name"
+    />
+
+    <label>Description</label>
+    <textarea
+      [(ngModel)]="description"
+      placeholder="Enter station description"
+    ></textarea>
+
+    <div class="form-actions">
+      <button
+        class="primary"
+        (click)="save()"
+        [disabled]="saving()"
+      >
+        {{ saving() ? 'Saving...' : 'Save Station' }}
+      </button>
+
+      <button class="secondary" (click)="closeForm()">
+        Cancel
+      </button>
+    </div>
+  </div>
+}
+
+@if (message()) {
+  <div class="message">{{ message() }}</div>
+}
+
+<div class="table-card">
+  <div class="table-header">
+    <h2>All Stations</h2>
+    <span>{{ totalCount() }} stations</span>
+  </div>
+
+  @if (loading()) {
+    <p class="empty">Loading stations...</p>
+  } @else if (stations().length === 0) {
+    <p class="empty">No stations found.</p>
+  } @else {
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (station of stations(); track station.id) {
+            <tr>
+              <td>#{{ station.id }}</td>
+              <td>{{ station.name }}</td>
+              <td>{{ station.description }}</td>
+
+              <td class="actions">
+                <button
+                  class="edit"
+                  (click)="openEdit(station)"
+                >
+                  Edit
+                </button>
+
+                <button
+                  class="delete"
+                  (click)="deleteStation(station)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <div class="pagination">
+    <button
+      [disabled]="pageNumber() <= 1"
+      (click)="changePage(pageNumber() - 1)"
+    >
+      Previous
+    </button>
+
+    <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
+
+    <button
+      [disabled]="pageNumber() >= totalPages()"
+      (click)="changePage(pageNumber() + 1)"
+    >
+      Next
+    </button>
+  </div>
+</div>

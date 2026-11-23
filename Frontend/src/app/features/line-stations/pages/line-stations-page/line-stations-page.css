@@ -1,0 +1,245 @@
+.page-header {
+    margin-bottom: 28px;
+}
+
+.eyebrow {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    margin-bottom: 9px;
+}
+
+.page-header h1 {
+    color: var(--color-text);
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+.page-header p {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Metro Lines */
+
+.lines-section {
+    margin-bottom: 32px;
+}
+
+.lines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.line-button {
+    min-height: 80px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.line-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Line 1 - Blue */
+
+.line-1 {
+    background: #E5EDF7;
+    color: #28558A;
+}
+
+.line-1.active {
+    border-color: #28558A;
+    background: #D4E2F2;
+}
+
+/* Line 2 - Red */
+
+.line-2 {
+    background: #F7E7E7;
+    color: #A43F3F;
+}
+
+.line-2.active {
+    border-color: #A43F3F;
+    background: #F0D6D6;
+}
+
+/* Line 3 - Green */
+
+.line-3 {
+    background: #E6F0E7;
+    color: #347447;
+}
+
+.line-3.active {
+    border-color: #347447;
+    background: #D4E7D7;
+}
+
+/* Stations Section */
+
+.stations-section {
+    --selected-line-color: var(--color-accent);
+    --selected-line-light: var(--color-accent-light);
+
+    padding: 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+/* Selected Line Colors */
+
+.stations-section.line-1 {
+    --selected-line-color: #28558A;
+    --selected-line-light: #E5EDF7;
+}
+
+.stations-section.line-2 {
+    --selected-line-color: #A43F3F;
+    --selected-line-light: #F7E7E7;
+}
+
+.stations-section.line-3 {
+    --selected-line-color: #347447;
+    --selected-line-light: #E6F0E7;
+}
+
+/* Section Header */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: var(--color-text);
+}
+
+/* Station Count */
+
+.station-count {
+    padding: 8px 13px;
+    border-radius: 8px;
+    background: var(--selected-line-light);
+    color: var(--selected-line-color);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Vertical Station Timeline */
+
+.stations-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.station-item {
+    display: flex;
+    align-items: stretch;
+    min-height: 58px;
+    gap: 16px;
+}
+
+.station-timeline {
+    width: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.station-dot {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--selected-line-color);
+    border: 2px solid var(--color-surface);
+    outline: 2px solid var(--selected-line-color);
+    z-index: 1;
+}
+
+.station-connector {
+    width: 2px;
+    flex: 1;
+    min-height: 30px;
+    background: var(--selected-line-color);
+}
+
+.station-name {
+    padding-bottom: 25px;
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.empty-message {
+    color: var(--color-text-secondary);
+}
+
+/* Loading and Empty States */
+
+.state-message,
+.empty-state {
+    padding: 32px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.state-message p,
+.empty-state p {
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
+.empty-state h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: var(--color-text);
+}
+
+.error-message p {
+    color: var(--color-danger);
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .page-header h1 {
+        font-size: 26px;
+    }
+
+    .lines-grid {
+        gap: 8px;
+    }
+
+    .line-button {
+        min-height: 64px;
+        font-size: 15px;
+    }
+
+    .stations-section {
+        padding: 16px;
+    }
+}

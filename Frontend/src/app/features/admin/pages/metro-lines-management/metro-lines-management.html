@@ -1,0 +1,85 @@
+<div class="page-header">
+  <div>
+    <span class="eyebrow">MANAGEMENT</span>
+    <h1>Metro Lines</h1>
+    <p>Manage metro lines in your network.</p>
+  </div>
+
+  <button class="primary" (click)="openCreate()">
+    + Add Metro Line
+  </button>
+</div>
+
+@if (showForm()) {
+  <div class="form-card">
+    <h2>
+      {{ editingLine() ? 'Edit Metro Line' : 'Create Metro Line' }}
+    </h2>
+
+    <label>Line Name</label>
+
+    <input
+      [(ngModel)]="name"
+      placeholder="Enter line name"
+    />
+
+    <div class="form-actions">
+      <button
+        class="primary"
+        (click)="save()"
+        [disabled]="saving()"
+      >
+        {{ saving() ? 'Saving...' : 'Save Line' }}
+      </button>
+
+      <button class="secondary" (click)="closeForm()">
+        Cancel
+      </button>
+    </div>
+  </div>
+}
+
+@if (message()) {
+  <div class="message">{{ message() }}</div>
+}
+
+@if (loading()) {
+  <p class="empty">Loading metro lines...</p>
+} @else if (lines().length === 0) {
+  <p class="empty">No metro lines found.</p>
+} @else {
+  <div class="line-grid">
+    @for (line of lines(); track line.id) {
+      <article class="line-card">
+
+        <div class="line-top">
+          <span class="line-id">#{{ line.id }}</span>
+        </div>
+
+        <h2>{{ line.name }}</h2>
+        <p>{{ line.stations.length }} stations assigned</p>
+
+        <div class="station-preview">
+          @for (station of line.stations.slice(0, 4); track station.id) {
+            <span>{{ station.name }}</span>
+          }
+
+          @if (line.stations.length > 4) {
+            <span>+{{ line.stations.length - 4 }} more</span>
+          }
+        </div>
+
+        <div class="actions">
+          <button class="edit" (click)="openEdit(line)">
+            Edit
+          </button>
+
+          <button class="delete" (click)="deleteLine(line)">
+            Delete
+          </button>
+        </div>
+
+      </article>
+    }
+  </div>
+}

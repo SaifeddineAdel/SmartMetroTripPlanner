@@ -1,0 +1,478 @@
+/* ==============================
+   Page Header
+============================== */
+
+.page-header {
+    margin-bottom: 34px;
+}
+
+.eyebrow,
+.section-label {
+    display: inline-block;
+    color: var(--color-accent);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.7px;
+    margin-bottom: 10px;
+}
+
+.page-header h1 {
+    color: var(--color-text);
+    font-size: 36px;
+    font-weight: 750;
+    letter-spacing: -1px;
+    margin: 0 0 10px;
+}
+
+.page-header p {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==============================
+   Trip Form
+============================== */
+
+.trip-form {
+    width: 100%;
+    padding: 34px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-card);
+}
+
+.form-heading {
+    margin-bottom: 28px;
+}
+
+.form-heading h2 {
+    color: var(--color-text);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0 0 8px;
+}
+
+.form-heading p {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.stations-selection {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 26px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.form-group label {
+    color: var(--color-text);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.form-group select {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 15px;
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(113, 139, 117, 0.12);
+}
+
+.plan-button {
+    width: 100%;
+    min-height: 51px;
+    padding: 13px 20px;
+    background: var(--color-primary);
+    color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.plan-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: var(--color-danger);
+}
+
+.plan-error {
+    margin: 15px 0 0;
+    font-size: 13px;
+}
+
+.state-message {
+    padding: 28px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.state-message p {
+    margin: 0;
+}
+
+/* ==============================
+   Trip Result
+============================== */
+
+.trip-result {
+    width: 100%;
+    margin-top: 30px;
+    padding: 34px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-card);
+}
+
+.result-header {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.result-header h2 {
+    color: var(--color-text);
+    font-size: 23px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+    margin: 0;
+}
+
+/* ==============================
+   Journey Overview
+============================== */
+
+.journey-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.journey-point {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+    padding: 18px;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+}
+
+.point-label {
+    color: var(--color-accent);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.3px;
+}
+
+.journey-point strong {
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* ==============================
+   Summary Cards
+============================== */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 22px;
+    background: #F2F5F0;
+    border: 1px solid #E5EBE2;
+    border-radius: 13px;
+}
+
+.summary-label {
+    color: #78847B;
+    font-size: 12px;
+    font-weight: 550;
+}
+
+.summary-card strong {
+    color: #29483C;
+    font-size: 24px;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+/* ==============================
+   Route Section
+============================== */
+
+.route-section {
+    padding-top: 30px;
+}
+
+.route-heading {
+    margin-bottom: 20px;
+}
+
+.route-heading h3 {
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 750;
+    margin: 0;
+}
+
+/* ==============================
+   Metro Line Card
+============================== */
+
+.route-segment {
+    --line-color: var(--color-accent);
+    --line-light: var(--color-accent-light);
+    --line-border: #DCE5DB;
+
+    padding: 26px;
+    background: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: 15px;
+    overflow: visible;
+}
+
+/* Line 1 - Blue */
+
+.route-segment.line-1 {
+    --line-color: #28558A;
+    --line-light: #E5EDF7;
+    --line-border: #D5E2F0;
+}
+
+/* Line 2 - Red */
+
+.route-segment.line-2 {
+    --line-color: #A43F3F;
+    --line-light: #F7E7E7;
+    --line-border: #EED3D3;
+}
+
+/* Line 3 - Green */
+
+.route-segment.line-3 {
+    --line-color: #347447;
+    --line-light: #E6F0E7;
+    --line-border: #D3E5D5;
+}
+
+.segment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #E9EDE7;
+}
+
+.line-title h4 {
+    color: var(--color-text);
+    font-size: 17px;
+    font-weight: 750;
+    margin: 5px 0 0;
+}
+
+.line-label {
+    color: var(--line-color);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.4px;
+}
+
+/* ==============================
+   Station Count
+============================== */
+
+.segment-stations {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 13px;
+    background: var(--line-light);
+    color: var(--line-color);
+    border: 1px solid var(--line-border);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* ==============================
+   Station Timeline
+============================== */
+
+.route-stations {
+    padding: 27px 0 10px 14px;
+    overflow: visible;
+}
+
+.route-station {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 58px;
+}
+
+.station-marker {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    margin-top: 2px;
+    background: #FFFFFF;
+    border: 3px solid var(--line-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.route-station:not(:last-child) .station-marker::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 3px;
+    width: 2px;
+    height: 48px;
+    background: var(--line-color);
+    border-radius: 2px;
+}
+
+.station-info {
+    min-width: 0;
+    padding-bottom: 19px;
+}
+
+.station-name {
+    color: #34483B;
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.6;
+}
+
+/* ==============================
+   Segment Footer
+============================== */
+
+.segment-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: 12px;
+}
+
+.segment-footer strong {
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 750;
+}
+
+/* ==============================
+   Transfer Badge
+============================== */
+
+.line-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 21px 0;
+}
+
+.transfer-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 112px;
+    padding: 9px 18px;
+    background: #E9EFE8;
+    color: #49664F;
+    border: 1px solid #D9E4D7;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+/* ==============================
+   Responsive
+============================== */
+
+@media (max-width: 650px) {
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    .trip-form,
+    .trip-result {
+        padding: 21px;
+    }
+
+    .stations-selection,
+    .journey-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .route-segment {
+        padding: 18px;
+    }
+
+    .segment-header {
+        align-items: flex-start;
+    }
+
+    .summary-card strong {
+        font-size: 22px;
+    }
+}

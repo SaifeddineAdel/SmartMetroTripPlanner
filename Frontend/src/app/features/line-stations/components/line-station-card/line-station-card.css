@@ -1,0 +1,120 @@
+.line-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    box-shadow: var(--shadow-card);
+}
+
+.line-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.line-title {
+    min-width: 0;
+}
+
+.line-label {
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+}
+
+.line-header h2 {
+    margin: 7px 0 0;
+    color: var(--color-text);
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.station-count {
+    min-width: 65px;
+    text-align: center;
+}
+
+.station-count strong {
+    display: block;
+    color: var(--color-text);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.station-count small {
+    color: var(--color-text-secondary);
+    font-size: 11px;
+}
+
+.stations-route {
+    padding: 26px 0 0 8px;
+}
+
+.route-station {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    min-height: 48px;
+}
+
+.route-marker {
+    position: relative;
+    z-index: 1;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    background: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+}
+
+.route-station:not(:last-child) .route-marker::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 3.5px;
+    width: 2px;
+    height: 40px;
+    background: var(--color-border);
+}
+
+.route-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 20px;
+}
+
+.sequence {
+    min-width: 22px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.station-name {
+    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.empty-message {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .line-card {
+        padding: 20px;
+    }
+
+    .line-header h2 {
+        font-size: 18px;
+    }
+}
