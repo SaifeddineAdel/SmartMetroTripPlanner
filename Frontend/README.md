@@ -1,59 +1,148 @@
-# SmartMetroTripPlanner
+# 🚇 Metro Flow — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.1.
+The frontend of **Metro Flow — Smart Metro Trip Planner** is built with Angular and TypeScript, providing a modern and responsive interface for exploring the Cairo Metro network and planning journeys.
 
-## Development server
+## Overview
 
-To start a local development server, run:
+The frontend is responsible for:
+- Providing the user interface for trip planning.
+- Displaying metro stations and lines.
+- Managing metro network data through administrative interfaces.
+- Communicating with the backend through HTTP APIs.
+- Displaying trip results and journey information.
 
-```bash
-ng serve
+## ✨ Features
+
+### 🗺️ Trip Planning
+- Select starting and destination stations.
+- Submit trip-planning requests.
+- Display the recommended route.
+- View journey stations and metro lines.
+- Display transfer information, estimated duration, and ticket fare.
+
+### 🚉 Stations
+- Browse available stations.
+- View station information.
+- Create, update, and delete stations.
+
+### 🚆 Metro Lines
+- Browse available metro lines.
+- View stations associated with each line.
+- Display metro line information.
+
+### 🔗 Line Stations
+- Manage relationships between metro lines and stations.
+- Display station sequences within each metro line.
+- Manage line-station assignments.
+
+### 🎨 User Interface
+- Responsive layout.
+- Modern and clean design.
+- Consistent color palette.
+- Active navigation highlighting.
+- Custom Metro Flow branding.
+
+## 🏗️ Frontend Structure
+
+The application follows a feature-based organization, grouping related components, services, and functionality together.
+
+```text
+Frontend/
+│
+├── public/
+│   └── metro-flow.png
+│
+├── src/
+│   │
+│   ├── app/
+│   │   │
+│   │   ├── features/
+│   │   │   ├── plan-trip/
+│   │   │   │
+│   │   │   ├── stations/
+│   │   │   │
+│   │   │   ├── metro-lines/
+│   │   │   │
+│   │   │   └── line-stations/
+│   │   │
+│   │   ├── app.ts
+│   │   ├── app.html
+│   │   └── app.css
+│   │
+│   ├── index.html
+│   └── styles.css
+│
+└── README.md
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🧩 Main Features & Responsibilities
 
-## Code scaffolding
+| Feature | Responsibility |
+|---|---|
+| `plan-trip` | Handles station selection and displays trip results |
+| `stations` | Handles station browsing and management |
+| `metro-lines` | Handles metro line browsing and management |
+| `line-stations` | Handles station-to-line relationships and sequence |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Application Files
 
-```bash
-ng generate component component-name
-```
+| File | Responsibility |
+|---|---|
+| `app.ts` | Main application component logic |
+| `app.html` | Main application template |
+| `app.css` | Main application styling |
+| `index.html` | Main HTML entry point |
+| `styles.css` | Global application styles |
+| `metro-flow.png` | Application branding asset |
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🔄 Frontend Request Flow
 
-```bash
-ng generate --help
-```
+### Trip Planning
 
-## Building
+1. The user opens the Plan Trip page.
+2. The frontend loads available stations using the Stations API.
+3. The user selects the source and destination stations.
+4. The frontend sends the trip request using Angular HttpClient.
+5. The backend response is received through an Observable.
+6. The interface displays the recommended journey and its details.
 
-To build the project run:
+### Stations & Metro Lines Management
 
-```bash
-ng build
-```
+1. The user opens the relevant management page.
+2. The feature service sends an HTTP request to the backend.
+3. The backend processes the requested operation.
+4. The frontend receives the response.
+5. The interface updates the displayed data.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🔌 Communication with Backend
 
-## Running unit tests
+The frontend communicates with backend APIs using Angular HttpClient.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- **Angular Router:** Handles navigation between application pages.
+- **HttpClient:** Sends HTTP requests to backend endpoints.
+- **RxJS:** Handles asynchronous data streams using Observables.
+- **TypeScript Interfaces:** Define the structure of API request and response data.
 
-```bash
-ng test
-```
+The frontend communicates through the API Gateway rather than directly accessing individual microservices.
 
-## Running end-to-end tests
+## 🛠️ Technology Stack
 
-For end-to-end (e2e) testing, run:
+| Technology | Purpose |
+|---|---|
+| Angular | Frontend framework |
+| TypeScript | Application logic and type safety |
+| HTML5 | Application structure |
+| CSS3 | Styling and responsive layouts |
+| Angular Router | Client-side navigation |
+| Angular HttpClient | Backend API communication |
+| RxJS | Asynchronous operations and Observables |
 
-```bash
-ng e2e
-```
+## 🎯 Frontend Responsibilities
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The frontend focuses on presentation, user interaction, and API communication.
 
-## Additional Resources
+Business rules such as route calculation, ticket pricing, and metro network processing are handled by the backend.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+**Metro Flow — Making Cairo Metro journeys easier.**
