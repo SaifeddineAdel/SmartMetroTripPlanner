@@ -1,151 +1,72 @@
-# Smart Metro Trip Planner
+# 🚇 Smart Metro Trip Planner — Backend
 
-A scalable, microservices-based Metro Trip Planning platform built with **.NET 10**, designed to help users find optimal metro routes while demonstrating clean architecture, software engineering principles, and performance-oriented backend development.
+A microservices-based backend built with **.NET 10 and ASP.NET Core**, responsible for metro network management, route optimization, authentication, and trip calculation.
 
-## Project Vision
+## Overview
 
-Smart Metro Trip Planner is designed with a production-oriented architecture, focusing on **maintainability, scalability, performance, and separation of responsibilities**.
+The backend provides the APIs and business logic that power Metro Flow.
 
-The system provides a strong foundation for future growth, allowing individual services to evolve and scale independently as business requirements increase.
+It is responsible for:
+- Managing metro network data.
+- Calculating optimal routes.
+- Handling metro network synchronization.
+- Managing administrative authentication.
+- Calculating trip duration and ticket fares.
 
-Its architecture is designed to support:
-- Independent scaling of microservices.
-- Extending trip-planning capabilities without tightly coupling services.
-- Efficient data access through caching and in-memory processing.
-- Future infrastructure and deployment improvements.
-- Maintainable and testable business logic.
+## 🏗️ Backend Architecture
 
-Actual production deployment would additionally require operational practices such as monitoring, logging, security hardening, resilience, and load testing.
+The backend follows a Microservices Architecture with three main services.
 
-## How the System Works
+### 1. API Gateway
 
-Smart Metro Trip Planner allows users to plan their metro journeys without requiring registration or login.
+**Technology:** YARP Reverse Proxy
 
-### User Journey
+The API Gateway acts as the single entry point for frontend requests.
 
-1. **Select Stations:** The user selects a starting station and a destination station.
-2. **Send Trip Request:** The request is sent to the API Gateway, which routes it to the TripPlanning service.
-3. **Find the Optimal Route:** TripPlanning uses its in-memory graph representation of the metro network to find the best available route.
-4. **Calculate Trip Details:** The system calculates the estimated travel time, number of stations, transfers, and ticket fare.
-5. **Display Results:** The user receives the recommended journey, including the ordered stations, metro lines, transfer points, estimated duration, and ticket price.
-
-The route selection prioritizes the minimum number of stations, followed by the minimum number of transfers.
-
-### Administration & Authentication
-
-Authentication is required only for administrators responsible for managing the metro network.
-
-Administrators can securely log in using **ASP.NET Core Identity, JWT Access Tokens, and Refresh Tokens** to access protected management endpoints.
-
-Administrative responsibilities include:
-- Managing metro stations.
-- Managing metro lines.
-- Managing station-to-line relationships.
-
-Regular users can access trip-planning functionality without creating an account or authenticating.
-
-## Architecture Overview
-
-The project follows a **Microservices Architecture** with clearly separated responsibilities.
-
-### Services
-
-**1. API Gateway**
-- Built with YARP.
-- Acts as the single entry point for client requests.
+Responsibilities:
+- Receives incoming HTTP requests.
 - Routes requests to the appropriate microservice.
+- Forwards trip-planning requests to TripPlanning.
+- Forwards metro management requests to MetroNetwork.
 
-**2. MetroNetwork Service**
-- Owns and manages metro network data.
-- Handles Stations, Metro Lines, and Line Stations.
-- Uses SQL Server as its primary persistent data store.
-- Publishes the latest network snapshot to Redis through a background process.
-- Provides protected administrative endpoints for managing metro network data.
+### 2. MetroNetwork Service
 
-**3. TripPlanning Service**
-- Responsible for calculating optimal metro journeys.
-- Retrieves the latest metro network snapshot from Redis.
-- Builds and maintains an in-memory graph.
-- Calculates routes, transfers, estimated travel time, and ticket fares.
+**Technologies:** ASP.NET Core, EF Core, SQL Server, Redis
 
-## Data Synchronization & Caching
+Responsible for managing the Cairo Metro network.
 
-Redis stores the latest metro network snapshot, allowing TripPlanning to access network data without repeatedly querying the MetroNetwork service or its database.
+Main responsibilities:
+- Manage metro stations.
+- Manage metro lines.
+- Manage line-station relationships.
+- Persist network data in SQL Server.
+- Publish metro network snapshots to Redis.
+- Provide administrative endpoints protected by authentication.
 
-A .NET `BackgroundService` handles publishing updated network snapshots to Redis. TripPlanning loads the snapshot and builds its in-memory graph, which is then used to process trip requests efficiently.
+### 3. TripPlanning Service
 
-This approach separates data ownership from route calculation and reduces unnecessary database access and inter-service communication during trip requests.
+**Technologies:** ASP.NET Core, Redis
 
-## Clean Architecture & Software Engineering
+Responsible for finding optimal metro journeys.
 
-The project applies Clean Architecture principles to keep business logic independent from infrastructure and external frameworks.
+Main responsibilities:
+- Read the latest metro network snapshot from Redis.
+- Build an in-memory graph representing the metro network.
+- Find routes between stations.
+- Handle transfers between metro lines.
+- Calculate estimated travel time.
+- Calculate ticket fares.
 
-### Architectural Principles
-
-- **Separation of Concerns:** Each service and layer has a clearly defined responsibility.
-- **Dependency Inversion:** Business logic depends on abstractions rather than infrastructure implementations.
-- **Domain-Centric Design:** Core business rules are separated from database and API concerns.
-- **Feature-Based Organization:** Related functionality is grouped together for better maintainability.
-- **Dependency Injection:** Dependencies are managed through the built-in .NET DI container.
-- **DTOs & Validation:** API contracts are separated from domain entities, with request validation handled independently.
-
-### Software Engineering Practices
-
-- SOLID principles.
-- Clean Code and maintainable code organization.
-- Reusable abstractions and dependency management.
-- Centralized exception handling.
-- Asynchronous programming with `async/await`.
-- Automated testing.
-- EF Core migrations and structured database persistence.
-
-## Route Planning Engine
-
-The TripPlanning service uses graph-based algorithms to calculate optimal metro journeys.
-
-Key capabilities:
-- Finds routes between source and destination stations.
-- Supports movement in both directions.
-- Handles transfers between metro lines.
-- Prioritizes the minimum number of stations, then the minimum number of transfers.
-- Calculates estimated journey duration.
-- Calculates ticket fares based on the number of stations.
-
-The route-planning logic is independent of API and infrastructure concerns, making it easier to test, maintain, and extend.
-
-## Technology Stack
-
-| Category | Technologies |
-|---|---|
-| Backend | C#, .NET 10, ASP.NET Core Web API |
-| Architecture | Microservices, Clean Architecture, DDD |
-| Database | SQL Server, Entity Framework Core |
-| Caching | Redis |
-| API Gateway | YARP |
-| Authentication | ASP.NET Core Identity, JWT, Refresh Tokens (Admin Only) |
-| Background Processing | .NET BackgroundService |
-| Validation | FluentValidation |
-| Containerization | Docker, Docker Compose |
-| Testing | Automated Tests |
-
-## Key Engineering Highlights
-
-- Designed a multi-service backend with clear service boundaries.
-- Applied Clean Architecture and Domain-Driven Design.
-- Implemented graph-based route optimization.
-- Integrated Redis for metro network snapshot caching.
-- Used background processing for network data synchronization.
-- Implemented admin authentication using JWT and Refresh Tokens.
-- Containerized the application and supporting infrastructure.
-- Added automated tests to improve maintainability and reliability.
-
-## Project Structure
+## 📁 Backend Structure
 
 ```text
-SmartMetroTripPlanner/
+Backend/
 │
 ├── services/
+│   │
 │   ├── ApiGateway/
+│   │   └── src/
+│   │       └── ApiGateway.Api/
 │   │
 │   ├── MetroNetwork/
 │   │   └── src/
@@ -161,9 +82,210 @@ SmartMetroTripPlanner/
 │           ├── TripPlanning.Domain/
 │           └── TripPlanning.Infrastructure/
 │
-└── compose.yaml
+├── SmartMetroTripPlanner.slnx
+├── compose.yaml
+└── README.md
+```
+
+## 🧱 Clean Architecture
+
+MetroNetwork and TripPlanning are organized into four main layers.
+
+| Layer | Responsibility |
+|---|---|
+| API | Controllers, HTTP endpoints, and application configuration |
+| Application | Use cases, DTOs, validation, and application workflows |
+| Domain | Core entities and business rules |
+| Infrastructure | Database access, Redis integration, and external dependencies |
+
+### Layer Responsibilities
+
+**API**
+- Exposes HTTP endpoints.
+- Handles incoming requests.
+- Returns HTTP responses.
+- Configures dependency injection and middleware.
+
+**Application**
+- Contains application use cases.
+- Defines request and response DTOs.
+- Coordinates business operations.
+- Handles request validation.
+
+**Domain**
+- Contains core business entities.
+- Defines domain rules and relationships.
+- Remains independent of infrastructure concerns.
+
+**Infrastructure**
+- Implements database access using EF Core.
+- Handles Redis communication.
+- Implements infrastructure-related interfaces.
+
+## 🔄 Backend Flows
+
+### 1. Trip Planning Flow
+
+```text
+Frontend
+   |
+   v
+API Gateway
+   |
+   v
+TripPlanning Service
+   |
+   v
+In-Memory Metro Graph
+   |
+   v
+Route Finding
+   |
+   v
+Trip Details Calculation
+   |
+   v
+API Response
+```
+
+Detailed steps:
+
+1. The API Gateway receives the trip request.
+2. YARP forwards it to TripPlanning.
+3. TripPlanning retrieves the relevant network graph from its in-memory state.
+4. The route-finding algorithm searches for the optimal journey.
+5. The service calculates station count, transfers, estimated duration, and ticket fare.
+6. The response is returned to the frontend.
+
+### 2. Metro Network Synchronization Flow
+
+```text
+SQL Server
+    |
+    v
+MetroNetwork Service
+    |
+    v
+BackgroundService
+    |
+    v
+Redis Snapshot
+    |
+    v
+TripPlanning Service
+    |
+    v
+In-Memory Graph
+```
+
+Detailed steps:
+
+1. MetroNetwork reads the latest metro network data from SQL Server.
+2. A .NET BackgroundService publishes a snapshot to Redis.
+3. TripPlanning reads the latest snapshot.
+4. The snapshot is converted into an in-memory graph.
+5. The graph is used to process trip requests.
+
+This design reduces repeated database queries and unnecessary service-to-service communication during route calculation.
+
+### 3. Administration & Authentication Flow
+
+1. An administrator submits login credentials.
+2. ASP.NET Core Identity handles authentication.
+3. The backend issues JWT Access and Refresh Tokens.
+4. Protected administrative endpoints validate authenticated requests.
+5. Administrators can manage stations, metro lines, and line-station relationships.
+
+Regular trip-planning functionality does not require authentication.
+
+## 🗺️ Route Planning Engine
+
+TripPlanning represents the metro network as a graph.
+
+### Main Concepts
+
+- **Stations:** Represent graph nodes.
+- **Connections:** Represent movement between stations.
+- **Metro Lines:** Identify the line associated with a connection.
+- **Transfers:** Represent switching between metro lines.
+
+### Route Optimization
+
+The route selection prioritizes:
+
+1. Minimum number of stations.
+2. Minimum number of transfers.
+
+The service also calculates:
+
+- Ordered journey stations.
+- Metro lines used.
+- Transfer points.
+- Estimated journey duration.
+- Ticket fare.
+
+## 💾 Data Storage & Caching
+
+### SQL Server
+
+Used as the persistent data store for metro network information.
+
+### Redis
+
+Used to store the latest metro network snapshot.
+
+### In-Memory Graph
+
+TripPlanning converts the Redis snapshot into a graph held in memory, allowing route calculations without querying the database for every request.
+
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Language | C# |
+| Framework | .NET 10, ASP.NET Core Web API |
+| Architecture | Microservices, Clean Architecture |
+| Database | SQL Server |
+| ORM | Entity Framework Core |
+| Caching | Redis |
+| API Gateway | YARP |
+| Authentication | ASP.NET Core Identity, JWT, Refresh Tokens |
+| Background Processing | .NET BackgroundService |
+| Validation | FluentValidation |
+| Containerization | Docker, Docker Compose |
+| Testing | Automated Tests |
+
+## 🧪 Engineering Practices
+
+- SOLID principles.
+- Dependency Injection.
+- Dependency Inversion.
+- DTO-based API contracts.
+- FluentValidation.
+- Centralized exception handling.
+- Asynchronous programming.
+- EF Core migrations.
+- Unit testing.
+- Separation of business logic from infrastructure.
+
+## ⚙️ CI Pipeline
+
+GitHub Actions runs the backend CI workflow.
+
+The pipeline performs:
+
+1. Repository checkout.
+2. .NET 10 SDK setup.
+3. NuGet dependency restoration.
+4. Backend solution build.
+5. Automated test execution.
+
+The workflow is located at:
+
+```text
+.github/workflows/ci.yaml
 ```
 
 ---
 
-**Smart Metro Trip Planner** demonstrates practical backend engineering with .NET, combining microservices, clean architecture, caching, background processing, and graph-based route optimization in a maintainable and extensible system.
+**Smart Metro Trip Planner — A .NET microservices backend for intelligent metro journey planning.**
